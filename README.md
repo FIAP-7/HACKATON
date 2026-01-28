@@ -25,36 +25,37 @@ O sistema foi desenhado utilizando o padrão de **Microsserviços** em um **Mono
 
 ```mermaid
 graph TD
-    subgraph "Mundo Externo"
-        Legado[Sistema Legado SUS]
-        Zap[WhatsApp (Twilio)]
-        User[Paciente]
+
+    subgraph Mundo_Externo["Mundo Externo"]
+        Legado["Sistema Legado SUS"]
+        Zap["WhatsApp (Twilio)"]
+        User["Paciente"]
     end
 
-    subgraph "Infraestrutura Local (Docker)"
-        RabbitMQ((RabbitMQ))
-        Postgres[(PostgreSQL)]
-        Redis[(Redis)]
+    subgraph Infra_Local["Infraestrutura Local (Docker)"]
+        RabbitMQ(("RabbitMQ"))
+        Postgres[("PostgreSQL")]
+        Redis[("Redis")]
     end
 
-    subgraph "Microsserviços (Java 21)"
-        MS_Ingestao[ms-ingestao]
-        MS_Processamento[ms-processamento]
-        MS_Notificacao[ms-notificacao]
+    subgraph Microsservicos["Microsserviços (Java 21)"]
+        MS_Ingestao["ms-ingestao"]
+        MS_Processamento["ms-processamento"]
+        MS_Notificacao["ms-notificacao"]
     end
 
     %% Fluxos
     Legado -->|HTTP POST| MS_Ingestao
     User -->|WhatsApp| Zap
     Zap -->|Webhook| MS_Ingestao
-    
+
     MS_Ingestao -->|Pub Evento| RabbitMQ
-    
+
     RabbitMQ -->|Sub Input| MS_Processamento
     MS_Processamento -->|Persistência| Postgres
     MS_Processamento -->|Lock Distribuído| Redis
     MS_Processamento -->|Pub Notificação| RabbitMQ
-    
+
     RabbitMQ -->|Sub Notificação| MS_Notificacao
     MS_Notificacao -->|API Call| Zap
 ```
@@ -85,6 +86,39 @@ Serviço de I/O responsável pela entrega da mensagem.
 *   **Output:** Chamada HTTP para API Externa.
 
 ---
+
+### Entidades Principais (Persistência)
+
+**1. `Agendamento`** (A raiz do agregado)
+Representa a consulta importada do legado.
+*   `id` (UUID - gerado pelo nosso sistema)
+*   `idExterno` (String - ID original no sistema do SUS, para correlação)
+*   `pacienteNome` (String)
+*   `pacienteTelefone` (String - Formato E.164)
+*   `dataHoraConsulta` (LocalDateTime)
+*   `medicoNome` (String)
+*   `especialidade` (String)
+*   `unidadeSaude` (String)
+*   `status` (Enum: `PENDENTE`, `AGUARDANDO_CONFIRMACAO`, `CONFIRMADO_PACIENTE`, `CONFIRMADO_AUTOMATICO`, `CANCELADO`, `REALOCADO`)
+*   `dataLimiteConfirmacao` (LocalDateTime - Calculado: DataConsulta - 2 dias)
+
+**2. `FilaEspera`**
+Lista de pacientes interessados em vagas naquela especialidade/unidade (para a repescagem).
+*   `id` (UUID)
+*   `pacienteNome` (String)
+*   `pacienteTelefone` (String)
+*   `especialidade` (String)
+*   `unidadeSaude` (String)
+*   `dataSolicitacao` (LocalDateTime)
+
+**3. `OfertaVaga`**
+Controla o envio de mensagens de "repescagem" para evitar que dois pacientes peguem a mesma vaga.
+*   `id` (UUID)
+*   `agendamentoOrigemId` (UUID - Vaga que abriu)
+*   `pacienteCandidatoId` (UUID - Paciente da fila)
+*   `tokenAceite` (String - Token único para validar o "SIM" no WhatsApp)
+*   `dataExpiracao` (LocalDateTime - Ex: 1 hora para responder)
+*   `status` (Enum: `ENVIADA`, `ACEITA`, `EXPIRADA`, `PERDIDA`)
 
 ## 🛠️ Stack Tecnológica
 
