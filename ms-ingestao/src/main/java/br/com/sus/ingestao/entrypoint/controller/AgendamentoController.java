@@ -4,6 +4,7 @@ import br.com.sus.ingestao.core.usecase.IngestaoService;
 import br.com.sus.ingestao.entrypoint.dto.AgendamentoRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ public class AgendamentoController {
     }
 
     @PostMapping("/agendamentos")
+    @PreAuthorize("hasRole('INTEGRADOR')")
     public ResponseEntity<Void> receberAgendamento(@Valid @RequestBody AgendamentoRequest request) {
         ingestaoService.processarAgendamento(request);
         return ResponseEntity.accepted().build();
