@@ -15,5 +15,11 @@ spring:
         jwt:
           issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:8081/realms/sus-hackathon}
 
+sus:
+  security:
+    webhook:
+      username: ${WEBHOOK_BASIC_USER:twilio}
+      password: ${WEBHOOK_BASIC_PASSWORD:teste123}
+
 server:
   port: 8080
