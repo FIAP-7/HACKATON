@@ -32,3 +32,28 @@ services:
       timeout: 5s
       retries: 20
     restart: unless-stopped
+
+  ms-ingestao:
+    build:
+      context: ./ms-ingestao
+    container_name: ms-ingestao
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${SPRING_RABBITMQ_USERNAME:-guest}
+      SPRING_RABBITMQ_PASSWORD: ${SPRING_RABBITMQ_PASSWORD:-guest}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/sus-hackathon
+      WEBHOOK_BASIC_USER: ${WEBHOOK_BASIC_USER:-twilio}
+      WEBHOOK_BASIC_PASSWORD: ${WEBHOOK_BASIC_PASSWORD:-teste123}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped

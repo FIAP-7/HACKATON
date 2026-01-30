@@ -21,5 +21,10 @@ sus:
       username: ${WEBHOOK_BASIC_USER:twilio}
       password: ${WEBHOOK_BASIC_PASSWORD:teste123}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 server:
   port: 8080
