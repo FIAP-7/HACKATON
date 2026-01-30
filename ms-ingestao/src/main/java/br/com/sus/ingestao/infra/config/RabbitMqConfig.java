@@ -18,6 +18,9 @@ public class RabbitMqConfig {
     public static final String QUEUE_AGENDAMENTO = "sus.input.carga-agendamento";
     public static final String ROUTING_AGENDAMENTO = "rota.carga.agendamento";
 
+    public static final String QUEUE_RESPOSTA_USUARIO = "sus.input.resposta-usuario";
+    public static final String ROUTING_RESPOSTA_USUARIO = "rota.resposta.usuario";
+
     @Bean
     public DirectExchange susDirectExchange() {
         return new DirectExchange(EXCHANGE_NAME, true, false);
@@ -31,6 +34,16 @@ public class RabbitMqConfig {
     @Bean
     public Binding agendamentoBinding(Queue agendamentoQueue, DirectExchange susDirectExchange) {
         return BindingBuilder.bind(agendamentoQueue).to(susDirectExchange).with(ROUTING_AGENDAMENTO);
+    }
+
+    @Bean
+    public Queue respostaUsuarioQueue() {
+        return new Queue(QUEUE_RESPOSTA_USUARIO, true);
+    }
+
+    @Bean
+    public Binding respostaUsuarioBinding(Queue respostaUsuarioQueue, DirectExchange susDirectExchange) {
+        return BindingBuilder.bind(respostaUsuarioQueue).to(susDirectExchange).with(ROUTING_RESPOSTA_USUARIO);
     }
 
     @Bean

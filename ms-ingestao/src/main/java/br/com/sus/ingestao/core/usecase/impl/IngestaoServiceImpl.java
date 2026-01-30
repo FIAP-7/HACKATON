@@ -1,7 +1,9 @@
 package br.com.sus.ingestao.core.usecase.impl;
 
 import br.com.sus.ingestao.core.event.AgendamentoEvent;
+import br.com.sus.ingestao.core.event.EventoRespostaUsuario;
 import br.com.sus.ingestao.core.port.AgendamentoPublisherPort;
+import br.com.sus.ingestao.core.port.RespostaPublisherPort;
 import br.com.sus.ingestao.core.usecase.IngestaoService;
 import br.com.sus.ingestao.entrypoint.dto.AgendamentoRequest;
 import org.slf4j.Logger;
@@ -15,10 +17,12 @@ public class IngestaoServiceImpl implements IngestaoService {
 
     private static final Logger log = LoggerFactory.getLogger(IngestaoServiceImpl.class);
 
-    private final AgendamentoPublisherPort publisher;
+    private final AgendamentoPublisherPort agendamentoPublisher;
+    private final RespostaPublisherPort respostaPublisher;
 
-    public IngestaoServiceImpl(AgendamentoPublisherPort publisher) {
-        this.publisher = publisher;
+    public IngestaoServiceImpl(AgendamentoPublisherPort agendamentoPublisher, RespostaPublisherPort respostaPublisher) {
+        this.agendamentoPublisher = agendamentoPublisher;
+        this.respostaPublisher = respostaPublisher;
     }
 
     @Override
@@ -40,6 +44,21 @@ public class IngestaoServiceImpl implements IngestaoService {
                 LocalDateTime.now()
         );
 
-        publisher.publicar(event);
+        agendamentoPublisher.publicar(event);
+    }
+
+    @Override
+    public void processarRespostaUsuario(String from, String body) {
+        String telefoneLimpo = sanitizeTelefone(from);
+        EventoRespostaUsuario evt = new EventoRespostaUsuario(telefoneLimpo, body, LocalDateTime.now());
+        respostaPublisher.publicar(evt);
+        log.info("[Webhook] Resposta publicada - from={}, telefoneLimpo={}, body={}", from, telefoneLimpo, body);
+    }
+
+    private String sanitizeTelefone(String from) {
+        if (from == null) return null;
+        String semPrefixo = from.startsWith("whatsapp:") ? from.substring("whatsapp:".length()) : from;
+        // Mantém apenas dígitos
+        return semPrefixo.replaceAll("[^0-9]", "");
     }
 }
