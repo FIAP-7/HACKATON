@@ -1,8 +1,8 @@
 package br.com.sus.ingestao.core.usecase;
 
-import br.com.sus.ingestao.entrypoint.dto.AgendamentoRequest;
+import br.com.sus.ingestao.core.usecase.model.AgendamentoCommand;
 
 public interface IngestaoService {
-    void processarAgendamento(AgendamentoRequest request);
+    void processarAgendamento(AgendamentoCommand command);
     void processarRespostaUsuario(String from, String body);
 }

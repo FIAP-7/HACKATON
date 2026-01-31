@@ -1,4 +1,4 @@
-package br.com.sus.ingestao.core.usecase.impl;
+package br.com.sus.ingestao.application.service;
 
 import br.com.sus.ingestao.core.event.AgendamentoEvent;
 import br.com.sus.ingestao.core.event.EventoRespostaUsuario;
@@ -8,13 +8,15 @@ import br.com.sus.ingestao.core.usecase.IngestaoService;
 import br.com.sus.ingestao.core.usecase.model.AgendamentoCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 /**
- * Deprecated: moved to application layer. Kept for reference but not a Spring bean.
+ * Application layer implementation for the Ingestao use case.
+ * Depends on ports and domain events only. Wired by Spring in the application layer.
  */
-@Deprecated
+@Service
 public class IngestaoServiceImpl implements IngestaoService {
 
     private static final Logger log = LoggerFactory.getLogger(IngestaoServiceImpl.class);

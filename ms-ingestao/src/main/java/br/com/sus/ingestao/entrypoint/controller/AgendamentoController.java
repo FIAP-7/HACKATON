@@ -1,6 +1,7 @@
 package br.com.sus.ingestao.entrypoint.controller;
 
 import br.com.sus.ingestao.core.usecase.IngestaoService;
+import br.com.sus.ingestao.core.usecase.model.AgendamentoCommand;
 import br.com.sus.ingestao.entrypoint.dto.AgendamentoRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -46,7 +47,17 @@ public class AgendamentoController {
             @RequestBody(required = true, description = "Payload do agendamento",
                     content = @Content(schema = @Schema(implementation = AgendamentoRequest.class)))
             @org.springframework.web.bind.annotation.RequestBody AgendamentoRequest request) {
-        ingestaoService.processarAgendamento(request);
+        AgendamentoCommand command = new AgendamentoCommand(
+                request.idExterno(),
+                new AgendamentoCommand.Paciente(request.paciente().nome(), request.paciente().telefone()),
+                new AgendamentoCommand.Consulta(
+                        request.consulta().dataHora(),
+                        request.consulta().medico(),
+                        request.consulta().especialidade(),
+                        request.consulta().unidadeId()
+                )
+        );
+        ingestaoService.processarAgendamento(command);
         return ResponseEntity.accepted().build();
     }
 }
