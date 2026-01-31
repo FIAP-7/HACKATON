@@ -1,0 +1,78 @@
+{
+  "realm": "sus-hackathon",
+  "enabled": true,
+  "displayName": "SUS Hackathon",
+  "loginWithEmailAllowed": true,
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "INTEGRADOR",
+        "description": "Permite acesso aos endpoints de integração do ms-ingestao"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "integrador",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "User",
+      "lastName": "Integrador",
+      "email": "integrador@example.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "integrador",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "INTEGRADOR",
+        "default-roles-sus-hackathon"
+      ]
+    },
+    {
+      "username": "service-account-legado-app",
+      "enabled": true,
+      "emailVerified": true,
+      "realmRoles": [
+        "INTEGRADOR",
+        "default-roles-sus-hackathon"
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "ms-ingestao-swagger",
+      "name": "ms-incgestao Swagger Client",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [
+        "*"
+      ]
+    },
+    {
+      "clientId": "legado-app",
+      "name": "Aplicacao Legado (Client Credentials)",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "legado-secret-123",
+      "redirectUris": [],
+      "webOrigins": []
+    }
+  ]
+}
