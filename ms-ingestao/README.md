@@ -132,9 +132,46 @@ Fluxo de alto nível:
 - Swagger UI: http://localhost:8080/swagger-ui/index.html
 - OpenAPI JSON: http://localhost:8080/v3/api-docs
 - Esquemas de segurança configurados:
-    - `bearerAuth` (HTTP Bearer, JWT)
-    - `basicAuth` (HTTP Basic)
+  - `bearerAuth` (HTTP Bearer, JWT)
+  - `basicAuth` (HTTP Basic)
 - Controllers anotados com `@SecurityRequirement` indicando o esquema adequado por endpoint.
+
+### Autenticação via Client Credentials (Keycloak)
+Além do fluxo com usuário/senha (password grant) para testes, o Keycloak foi configurado para suportar o fluxo Client Credentials para integrações de sistema a sistema.
+
+- Client confidencial: `legado-app`
+- Secret: `legado-secret-123` (pode ser alterado no arquivo keycloak/realm-sus-hackathon.json)
+- Role atribuída ao service account: `INTEGRADOR` (o token emitido conterá `realm_access.roles` com `INTEGRADOR`)
+
+Obter access token (no host, com Keycloak mapeado na porta 8081):
+```bash
+curl -X POST \
+  "http://localhost:8081/realms/sus-hackathon/protocol/openid-connect/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=legado-app" \
+  -d "client_secret=legado-secret-123"
+```
+Usar o token no endpoint protegido:
+```bash
+TOKEN="$(curl -s -X POST \
+  "http://localhost:8081/realms/sus-hackathon/protocol/openid-connect/token" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=legado-app" \
+  -d "client_secret=legado-secret-123" | jq -r .access_token)"
+
+curl -X POST "http://localhost:8080/api/v1/integracao/agendamentos" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "idExterno": "SUS-100200",
+    "paciente": {"nome": "João da Silva", "telefone": "+5511999998888"},
+    "consulta": {"dataHora": "2027-10-20T14:00:00", "medico": "Dr. House", "especialidade": "CLINICA_GERAL", "unidadeId": "UBS-01"}
+  }'
+```
+
+Observação: Dentro da rede Docker, utilize o host `keycloak:8080` no lugar de `localhost:8081`.
 
 ---
 

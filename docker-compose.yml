@@ -19,15 +19,18 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:23.0.0
     container_name: sus-keycloak
-    command: ["start-dev", "--http-port=8080"]
+    command: ["start-dev", "--http-port=8080", "--import-realm"]
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_DB: dev-file
+      QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY: "true"
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import
     ports:
       - "8081:8080"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/realms/master"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/realms/sus-hackathon"]
       interval: 10s
       timeout: 5s
       retries: 20
@@ -50,7 +53,7 @@ services:
       rabbitmq:
         condition: service_healthy
       keycloak:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 10s
