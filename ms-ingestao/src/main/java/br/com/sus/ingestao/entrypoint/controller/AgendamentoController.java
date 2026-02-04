@@ -34,7 +34,7 @@ public class AgendamentoController {
     @Operation(
             summary = "Recebe carga de agendamentos",
             description = "Recebe um JSON com dados do agendamento, valida e publica evento para processamento assíncrono.",
-            security = @SecurityRequirement(name = "bearerAuth")
+            security = @SecurityRequirement(name = "ApiKeyAuth")
     )
     @ApiResponses({
             @ApiResponse(responseCode = "202", description = "Agendamento recebido e aceito para processamento"),

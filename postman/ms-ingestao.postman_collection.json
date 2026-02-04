@@ -1,0 +1,219 @@
+{
+  "info": {
+    "_postman_id": "3c1fe7b3-0af4-4c1a-8b63-col-MSIngestao",
+    "name": "MS Ingestao - Test Suite",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Coleção para testar os cenários do microsserviço ms-ingestao (API Key + Endpoints públicos)."
+  },
+  "item": [
+    {
+      "name": "Integracao",
+      "item": [
+        {
+          "name": "POST Agendamentos - Sucesso (202)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{apiKey}}" },
+              { "key": "Content-Type", "value": "{{contentType}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "integracao", "agendamentos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idExterno\": \"REQ-001\",\n  \"paciente\": {\n    \"nome\": \"Maria Silva\",\n    \"telefone\": \"+5511999998888\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-12-25T14:00:00\",\n    \"medico\": \"Dr. House\",\n    \"especialidade\": \"CARDIOLOGIA\",\n    \"unidadeId\": \"UBS-VILA-MARIANA\"\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 202 Accepted', function () {",
+                  "  pm.response.to.have.status(202);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Agendamentos - Sem API Key (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "{{contentType}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "integracao", "agendamentos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idExterno\": \"REQ-002\",\n  \"paciente\": {\n    \"nome\": \"Joao Souza\",\n    \"telefone\": \"+551188887777\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-12-26T09:30:00\",\n    \"medico\": \"Dra. Clara\",\n    \"especialidade\": \"ORTOPEDIA\",\n    \"unidadeId\": \"UBS-CENTRO\"\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401 Unauthorized', function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Agendamentos - API Key Errada (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{wrongApiKey}}" },
+              { "key": "Content-Type", "value": "{{contentType}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "integracao", "agendamentos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idExterno\": \"REQ-003\",\n  \"paciente\": {\n    \"nome\": \"Ana Paula\",\n    \"telefone\": \"+551177776666\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-12-27T11:15:00\",\n    \"medico\": \"Dr. Marcos\",\n    \"especialidade\": \"DERMATOLOGIA\",\n    \"unidadeId\": \"UBS-JARDINS\"\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401 Unauthorized', function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST Agendamentos - Payload Inválido (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-API-KEY", "value": "{{apiKey}}" },
+              { "key": "Content-Type", "value": "{{contentType}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "integracao", "agendamentos"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idExterno\": \"\",\n  \"paciente\": {\n    \"nome\": \"\",\n    \"telefone\": \"12345\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-01-01T00:00:00\",\n    \"medico\": \"\",\n    \"especialidade\": \"\",\n    \"unidadeId\": \"\"\n  }\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400 Bad Request', function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Acao Email",
+      "item": [
+        {
+          "name": "GET Responder (200)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/acao/responder?token={{token}}&acao={{acao}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "acao", "responder"],
+              "query": [
+                { "key": "token", "value": "{{token}}" },
+                { "key": "acao", "value": "{{acao}}" }
+              ]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Content-Type is text/html', function () {",
+                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET Actuator Health (200)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["actuator", "health"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 OK', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('Body contains status UP', function () {",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json.status).to.eql('UP');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": []
+}

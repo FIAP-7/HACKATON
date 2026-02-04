@@ -13,11 +13,11 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI openAPI() {
         Components components = new Components()
-                .addSecuritySchemes("bearerAuth",
+                .addSecuritySchemes("ApiKeyAuth",
                         new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT"));
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.HEADER)
+                                .name("X-API-KEY"));
 
         return new OpenAPI()
                 .components(components)
