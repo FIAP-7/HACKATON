@@ -50,17 +50,9 @@ public class IngestaoServiceImpl implements IngestaoService {
     }
 
     @Override
-    public void processarRespostaUsuario(String from, String body) {
-        String telefoneLimpo = sanitizeTelefone(from);
-        EventoRespostaUsuario evt = new EventoRespostaUsuario(telefoneLimpo, body, LocalDateTime.now());
+    public void processarAcaoEmail(String token, String acao) {
+        EventoRespostaUsuario evt = new EventoRespostaUsuario(token, acao, EventoRespostaUsuario.CanalNotificacao.EMAIL, LocalDateTime.now());
         respostaPublisher.publicar(evt);
-        log.info("[Webhook] Resposta publicada - from={}, telefoneLimpo={}, body={}", from, telefoneLimpo, body);
-    }
-
-    private String sanitizeTelefone(String from) {
-        if (from == null) return null;
-        String semPrefixo = from.startsWith("whatsapp:") ? from.substring("whatsapp:".length()) : from;
-        // Mantém apenas dígitos
-        return semPrefixo.replaceAll("[^0-9]", "");
+        log.info("[AcaoEmail] Resposta publicada - token={}, acao={}", token, acao);
     }
 }

@@ -25,9 +25,10 @@ public class RabbitMqRespostaProducer implements RespostaPublisherPort {
                 RabbitMqConfig.ROUTING_RESPOSTA_USUARIO,
                 event
         );
-        log.info("[RabbitMQ] RespostaUsuario publicada exchange={}, routingKey={}, telefone={}",
+        log.info("[RabbitMQ] RespostaUsuario publicada exchange={}, routingKey={}, identificador={}, canal={}",
                 RabbitMqConfig.EXCHANGE_NAME,
                 RabbitMqConfig.ROUTING_RESPOSTA_USUARIO,
-                event.telefone());
+                event.identificador(),
+                event.canal());
     }
 }

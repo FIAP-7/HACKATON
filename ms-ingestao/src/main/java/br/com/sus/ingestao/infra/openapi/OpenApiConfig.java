@@ -17,17 +17,13 @@ public class OpenApiConfig {
                         new SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
-                                .bearerFormat("JWT"))
-                .addSecuritySchemes("basicAuth",
-                        new SecurityScheme()
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("basic"));
+                                .bearerFormat("JWT"));
 
         return new OpenAPI()
                 .components(components)
                 .info(new Info()
                         .title("MS Ingestão - SUS")
                         .version("0.0.1")
-                        .description("API de Ingestão de Agendamentos e Webhook Twilio"));
+                        .description("API de Ingestão de Agendamentos e Ações via Email"));
     }
 }
