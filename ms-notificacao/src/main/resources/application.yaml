@@ -1,0 +1,36 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ms-notificacao
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        default-requeue-rejected: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hercferato@gmail.com
+    password: xqvzczwmlscjrsfq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+logging:
+  level:
+    root: INFO
+    br.com.sus: DEBUG
+    org.springframework.amqp: INFO
