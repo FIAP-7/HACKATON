@@ -1,8 +1,9 @@
 package br.com.sus.ms_processamento.infrastructure.persistence.entity;
 
-import br.com.sus.ms_processamento.domain.model.Agendamento;
-import br.com.sus.ms_processamento.domain.model.StatusAgendamentoEnum;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -17,31 +18,21 @@ import java.util.UUID;
 @NoArgsConstructor
 
 @Entity
-@Table(name="agendamento")
-public class AgendamentoEntity {
+@Table(name="fila_espera")
+public class FilaEsperaEntity {
 
     @Id
     @UuidGenerator
     @GeneratedValue
     private UUID id;
 
-    private String idExterno;
-
     private String pacienteNome;
 
     private String pacienteTelefone;
-
-    private LocalDateTime dataHoraConsulta;
-
-    private String medicoNome;
 
     private String especialidade;
 
     private String unidadeSaude;
 
-    @Enumerated(EnumType.STRING)
-    private StatusAgendamentoEnum status;
-
-    private LocalDateTime dataLimiteConsulta;
-
+    private LocalDateTime dataSolicitacao;
 }

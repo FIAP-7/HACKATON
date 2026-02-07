@@ -5,6 +5,7 @@ import br.com.sus.ms_processamento.domain.model.Agendamento;
 import br.com.sus.ms_processamento.domain.model.StatusAgendamentoEnum;
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
 import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoJPARepository;
+import br.com.sus.ms_processamento.infrastructure.presenters.AgendamentoEntityPresenters;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class AgendamentoGateway implements IAgendamentoGateway {
 
     @Override
     public void salvar(Agendamento agendamento) {
-        AgendamentoEntity agendamentoEntity = AgendamentoEntity.build(agendamento);
+        AgendamentoEntity agendamentoEntity = AgendamentoEntityPresenters.toEntity(agendamento);
 
         agendamentoJPARepository.save(agendamentoEntity);
     }
@@ -38,5 +39,10 @@ public class AgendamentoGateway implements IAgendamentoGateway {
     @Override
     public void realocarAgendamento(Agendamento agendamento) {
 
+    }
+
+    @Override
+    public Agendamento buscarAgendamento(UUID idAgendamento) {
+        return null;
     }
 }
