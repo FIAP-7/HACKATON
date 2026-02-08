@@ -1,6 +1,7 @@
 package br.com.sus.ms_processamento.infrastructure.config;
 
 import br.com.sus.ms_processamento.application.gateway.IAgendamentoGateway;
+import br.com.sus.ms_processamento.application.gateway.IFilaEsperaGateway;
 import br.com.sus.ms_processamento.application.gateway.IReagendamentoGateway;
 import br.com.sus.ms_processamento.application.usecase.reagendamento.ReagendamentoUseCase;
 import br.com.sus.ms_processamento.application.usecase.reagendamento.validation.IReagendamentoValidation;
@@ -33,8 +34,17 @@ public class ReagendamentoUseCaseConfig {
 
     @Bean
     public ReagendamentoUseCase reagendamentoUseCase(
-            ReagendamentoValidationChain reagendamentoValidationChain
+            ReagendamentoValidationChain validationChain,
+            IAgendamentoGateway agendamentoGateway,
+            IReagendamentoGateway reagendamentoGateway,
+            IFilaEsperaGateway filaEsperaGateway
     ) {
-        return ReagendamentoUseCase.create(reagendamentoValidationChain);
+        return ReagendamentoUseCase.create(
+                validationChain,
+                agendamentoGateway,
+                reagendamentoGateway,
+                filaEsperaGateway
+        );
     }
 }
+

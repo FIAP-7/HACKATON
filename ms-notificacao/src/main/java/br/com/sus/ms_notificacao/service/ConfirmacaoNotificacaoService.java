@@ -25,7 +25,7 @@ public class ConfirmacaoNotificacaoService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             // No Hackathon, esses links apontariam para o seu Front-end React ou seu API Gateway
-            String urlBase = "http://localhost:8080/v1/agendamentos/acao?id=" + record.pacienteNome().hashCode(); // Exemplo de ID
+            String urlBase = "http://localhost:8080/api/v1/acao" + record.tokenUUID(); // Exemplo de ID
 
             String htmlContent = String.format(
                     "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px;'>" +

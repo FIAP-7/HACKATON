@@ -11,6 +11,6 @@ public record AgendamentoCommand(
         Paciente paciente,
         Consulta consulta
 ) {
-    public record Paciente(String nome, String telefone) {}
-    public record Consulta(LocalDateTime dataHora, String medico, String especialidade, String unidadeId) {}
+    public record Paciente(String nome, String telefone, String email) {}
+    public record Consulta(LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId) {}
 }

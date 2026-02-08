@@ -14,9 +14,9 @@ WORKDIR /opt/app
 
 RUN apk add --no-cache curl
 
-COPY --from=build /app/target/ms-ingestao-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/ms-notificacao-0.0.1-SNAPSHOT.jar app.jar
 
-EXPOSE 8080
+EXPOSE 8082
 
 ENV JAVA_OPTS=""
 

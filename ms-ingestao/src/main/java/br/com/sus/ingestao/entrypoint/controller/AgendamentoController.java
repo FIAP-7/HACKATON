@@ -49,11 +49,13 @@ public class AgendamentoController {
             @org.springframework.web.bind.annotation.RequestBody AgendamentoRequest request) {
         AgendamentoCommand command = new AgendamentoCommand(
                 request.idExterno(),
-                new AgendamentoCommand.Paciente(request.paciente().nome(), request.paciente().telefone()),
+                new AgendamentoCommand.Paciente(request.paciente().nome(), request.paciente().telefone(), request.paciente().email()),
                 new AgendamentoCommand.Consulta(
                         request.consulta().dataHora(),
                         request.consulta().medico(),
                         request.consulta().especialidade(),
+                        request.consulta().endereco(),
+                        request.consulta().localAtendimento(),
                         request.consulta().unidadeId()
                 )
         );

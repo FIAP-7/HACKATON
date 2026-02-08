@@ -1,24 +1,20 @@
-server:
-  port: 8081
-
 spring:
   application:
     name: ms-notificacao
-
+  threads:
+    virtual:
+      enabled: true
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
-    listener:
-      simple:
-        default-requeue-rejected: false
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: hercferato@gmail.com
-    password: xqvzczwmlscjrsfq
+    username: gestaocapacidadesus@gmail.com
+    password: lstcgztylqvjwzdm
     properties:
       mail:
         smtp:
@@ -34,3 +30,6 @@ logging:
     root: INFO
     br.com.sus: DEBUG
     org.springframework.amqp: INFO
+
+server:
+  port: 8082

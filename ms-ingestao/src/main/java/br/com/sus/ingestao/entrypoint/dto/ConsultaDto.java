@@ -12,5 +12,7 @@ public record ConsultaDto(
         LocalDateTime dataHora,
         @NotBlank(message = "Médico é obrigatório") String medico,
         @NotBlank(message = "Especialidade é obrigatória") String especialidade,
-        @NotBlank(message = "Unidade é obrigatória") String unidadeId
+        @NotBlank(message = "O endereço é obrigatório") String endereco,
+        @NotBlank(message = "O local de atendimento é obrigatorio") String localAtendimento,
+		@NotBlank(message = "Unidade é obrigatória") String unidadeId
 ) {}
