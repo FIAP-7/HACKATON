@@ -33,7 +33,7 @@ public class ReagendamentoGateway implements IReagendamentoGateway {
     public List<Reagendamento> buscarDisponivelParaReagendamento(Reagendamento reagendamento) {
         Agendamento agendamento = agendamentoGateway.buscarAgendamento(reagendamento.getIdAgendamento());
 
-        List<FilaEsperaEntity> filaEsperaEntityList = filaEsperaJPARepository.findTop3ByEspecialidadeAndUnidadeSaudeOrderByDataSolicitacao(agendamento.getEspecialidade(), agendamento.getUnidadeSaude());
+        List<FilaEsperaEntity> filaEsperaEntityList = filaEsperaJPARepository.findTop3ByEspecialidadeAndUnidadeIdOrderByDataSolicitacao(agendamento.getEspecialidade(), agendamento.getUnidadeId());
 
         return filaEsperaEntityList.stream()
                 .map(filaEsperaEntity -> toReagendamento(filaEsperaEntity, reagendamento.getId(), reagendamento.getIdAgendamento()))

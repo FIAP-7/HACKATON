@@ -8,6 +8,6 @@ import java.util.UUID;
 
 public interface FilaEsperaJPARepository extends JpaRepository<FilaEsperaEntity, UUID> {
 
-    List<FilaEsperaEntity> findTop3ByEspecialidadeAndUnidadeSaudeOrderByDataSolicitacao(String especialidade, String unidadeSaude);
+    List<FilaEsperaEntity> findTop3ByEspecialidadeAndUnidadeIdOrderByDataSolicitacao(String especialidade, String unidadeId);
 
 }

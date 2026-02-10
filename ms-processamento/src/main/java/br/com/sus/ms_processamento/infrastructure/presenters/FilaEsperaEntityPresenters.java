@@ -10,8 +10,11 @@ public class FilaEsperaEntityPresenters {
                 .id(filaEspera.getId())
                 .pacienteNome(filaEspera.getPacienteNome())
                 .pacienteTelefone(filaEspera.getPacienteTelefone())
+                .pacienteEmail(filaEspera.getPacienteEmail())
                 .especialidade(filaEspera.getEspecialidade())
-                .unidadeSaude(filaEspera.getUnidadeSaude())
+                .endereco(filaEspera.getEndereco())
+                .localAtendimento(filaEspera.getLocalAtendimento())
+                .unidadeId(filaEspera.getUnidadeId())
                 .dataSolicitacao(filaEspera.getDataSolicitacao())
                 .build();
     }

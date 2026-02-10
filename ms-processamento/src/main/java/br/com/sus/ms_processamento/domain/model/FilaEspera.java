@@ -18,33 +18,45 @@ public class FilaEspera {
 
     private String pacienteTelefone;
 
+    private String pacienteEmail;
+
     private String especialidade;
 
-    private String unidadeSaude;
+    private String endereco;
+
+    private String localAtendimento;
+
+    private String unidadeId;
 
     private LocalDateTime dataSolicitacao;
 
-    public static FilaEspera create(UUID id, String pacienteNome, String pacienteTelefone, String especialidade, String unidadeSaude) {
+    public static FilaEspera create(UUID id, String pacienteNome, String pacienteTelefone, String pacienteEmail, String especialidade, String endereco, String localAtendimento, String unidadeId) {
         FilaEspera filaEspera = new FilaEspera();
 
         filaEspera.setId(id);
         filaEspera.setPacienteNome(pacienteNome);
         filaEspera.setPacienteTelefone(pacienteTelefone);
+        filaEspera.setPacienteEmail(pacienteEmail);
         filaEspera.setEspecialidade(especialidade);
-        filaEspera.setUnidadeSaude(unidadeSaude);
+        filaEspera.setEndereco(endereco);
+        filaEspera.setLocalAtendimento(localAtendimento);
+        filaEspera.setUnidadeId(unidadeId);
         filaEspera.setDataSolicitacao(LocalDateTime.now());
 
         return filaEspera;
     }
 
 
-    public static FilaEspera create(String pacienteNome, String pacienteTelefone, String especialidade, String unidadeSaude) {
+    public static FilaEspera create(String pacienteNome, String pacienteTelefone, String pacienteEmail, String especialidade, String endereco, String localAtendimento, String unidadeId) {
         FilaEspera filaEspera = new FilaEspera();
 
         filaEspera.setPacienteNome(pacienteNome);
         filaEspera.setPacienteTelefone(pacienteTelefone);
+        filaEspera.setPacienteEmail(pacienteEmail);
         filaEspera.setEspecialidade(especialidade);
-        filaEspera.setUnidadeSaude(unidadeSaude);
+        filaEspera.setEndereco(endereco);
+        filaEspera.setLocalAtendimento(localAtendimento);
+        filaEspera.setUnidadeId(unidadeId);
         filaEspera.setDataSolicitacao(LocalDateTime.now());
 
         return filaEspera;

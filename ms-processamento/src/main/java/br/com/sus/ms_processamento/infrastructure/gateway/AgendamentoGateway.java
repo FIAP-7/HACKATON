@@ -33,6 +33,13 @@ public class AgendamentoGateway implements IAgendamentoGateway {
     public void salvar(Agendamento agendamento) {
         AgendamentoEntity agendamentoEntity = AgendamentoEntityPresenters.toEntity(agendamento);
 
+        // Preserve existing tokenUUID if present in DB (created earlier by consumer)
+        if (agendamento.getId() != null) {
+            agendamentoJPARepository.findById(agendamento.getId()).ifPresent(existing -> agendamentoEntity.setTokenUUID(existing.getTokenUUID()));
+        } else if (agendamento.getIdExterno() != null) {
+            agendamentoJPARepository.findByIdExterno(agendamento.getIdExterno()).ifPresent(existing -> agendamentoEntity.setTokenUUID(existing.getTokenUUID()));
+        }
+
         agendamentoJPARepository.save(agendamentoEntity);
     }
 

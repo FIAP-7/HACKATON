@@ -11,10 +11,13 @@ public class AgendamentoPresenter {
                 agendamento.getIdExterno(),
                 agendamento.getPacienteNome(),
                 agendamento.getPacienteTelefone(),
-                agendamento.getDataHoraConsulta(),
-                agendamento.getMedicoNome(),
+                agendamento.getPacienteEmail(),
+                agendamento.getDataHora(),
+                agendamento.getMedico(),
                 agendamento.getEspecialidade(),
-                agendamento.getUnidadeSaude(),
+                agendamento.getEndereco(),
+                agendamento.getLocalAtendimento(),
+                agendamento.getUnidadeId(),
                 agendamento.getStatus(),
                 agendamento.getDataLimiteConsulta()
         );
@@ -25,10 +28,13 @@ public class AgendamentoPresenter {
                 agendamentoInput.idExterno(),
                 agendamentoInput.pacienteNome(),
                 agendamentoInput.pacienteTelefone(),
-                agendamentoInput.dataHoraConsulta(),
-                agendamentoInput.medicoNome(),
+                agendamentoInput.pacienteEmail(),
+                agendamentoInput.dataHora(),
+                agendamentoInput.medico(),
                 agendamentoInput.especialidade(),
-                agendamentoInput.unidadeSaude(),
+                agendamentoInput.endereco(),
+                agendamentoInput.localAtendimento(),
+                agendamentoInput.unidadeId(),
                 agendamentoInput.status(),
                 agendamentoInput.dataLimiteConsulta()
         );

@@ -31,4 +31,20 @@ public class RabbitMqRespostaProducer implements RespostaPublisherPort {
                 event.identificador(),
                 event.canal());
     }
+
+    @Override
+    public void publicarAntecipacao(EventoRespostaUsuario event) {
+        rabbitTemplate.convertAndSend(
+                RabbitMqConfig.EXCHANGE_NAME,
+                RabbitMqConfig.ROUTING_ANTECIPACAO_USUARIO,
+                event
+        );
+        log.info("[RabbitMQ] Antecipação publicada exchange={}, routingKey={}, identificador={}, canal={}",
+                RabbitMqConfig.EXCHANGE_NAME,
+                RabbitMqConfig.ROUTING_ANTECIPACAO_USUARIO,
+                event.identificador(),
+                event.canal());
+    }
+
+
 }

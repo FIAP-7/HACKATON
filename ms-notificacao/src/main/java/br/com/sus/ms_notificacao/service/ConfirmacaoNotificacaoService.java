@@ -25,7 +25,7 @@ public class ConfirmacaoNotificacaoService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             // No Hackathon, esses links apontariam para o seu Front-end React ou seu API Gateway
-            String urlBase = "http://localhost:8080/api/v1/acao" + record.tokenUUID(); // Exemplo de ID
+            String urlBase = "http://localhost:8080/api/v1/acao/confirmar?token=" + record.tokenUUID(); // Exemplo de ID
 
             String htmlContent = String.format(
                     "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px;'>" +
@@ -34,9 +34,9 @@ public class ConfirmacaoNotificacaoService {
                             "  <p>Sua consulta foi agendada para: <span style='color: #d9534f;'>%s</span></p>" +
                             "  <p>Por favor, selecione uma das opções abaixo para gerenciar seu agendamento:</p>" +
                             "  <div style='margin-top: 20px; text-align: center;'>" +
-                            "    <a href='%s&tipo=CONFIRMAR' style='background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;'>Confirmar</a>" +
-                            "    <a href='%s&tipo=CANCELAR' style='background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;'>Cancelar</a>" +
-                            "    <a href='%s&tipo=REAGENDAR' style='background-color: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Reagendar</a>" +
+                            "    <a href='%s&acao=CONFIRMAR' style='background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;'>Confirmar</a>" +
+                            "    <a href='%s&acao=CANCELAR' style='background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;'>Cancelar</a>" +
+                            "    <a href='%s&acao=REAGENDAR' style='background-color: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Reagendar</a>" +
                             "  </div>" +
                             "  <hr style='margin-top: 30px; border: 0; border-top: 1px solid #eee;'>" +
                             "  <p style='font-size: 12px; color: #777;'>Esta é uma mensagem automática do sistema SUS Ágil.</p>" +

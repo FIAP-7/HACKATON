@@ -11,10 +11,13 @@ public class AgendamentoEntityPresenters {
                 .idExterno(agendamento.getIdExterno())
                 .pacienteNome(agendamento.getPacienteNome())
                 .pacienteTelefone(agendamento.getPacienteTelefone())
-                .dataHoraConsulta(agendamento.getDataHoraConsulta())
-                .medicoNome(agendamento.getMedicoNome())
+                .pacienteEmail(agendamento.getPacienteEmail())
+                .dataHora(agendamento.getDataHora())
+                .medico(agendamento.getMedico())
                 .especialidade(agendamento.getEspecialidade())
-                .unidadeSaude(agendamento.getUnidadeSaude())
+                .endereco(agendamento.getEndereco())
+                .localAtendimento(agendamento.getLocalAtendimento())
+                .unidadeId(agendamento.getUnidadeId())
                 .status(agendamento.getStatus())
                 .dataLimiteConsulta(agendamento.getDataLimiteConsulta())
                 .build();
@@ -25,10 +28,13 @@ public class AgendamentoEntityPresenters {
                 agendamento.getIdExterno(),
                 agendamento.getPacienteNome(),
                 agendamento.getPacienteTelefone(),
-                agendamento.getDataHoraConsulta(),
-                agendamento.getMedicoNome(),
+                agendamento.getPacienteEmail(),
+                agendamento.getDataHora(),
+                agendamento.getMedico(),
                 agendamento.getEspecialidade(),
-                agendamento.getUnidadeSaude(),
+                agendamento.getEndereco(),
+                agendamento.getLocalAtendimento(),
+                agendamento.getUnidadeId(),
                 agendamento.getStatus(),
                 agendamento.getDataLimiteConsulta()
         );

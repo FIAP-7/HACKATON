@@ -38,12 +38,12 @@ public class IngestaoServiceImpl implements IngestaoService {
                 command.idExterno(),
                 new AgendamentoEvent.Paciente(command.paciente().nome(), command.paciente().telefone(), command.paciente().email()),
                 new AgendamentoEvent.Consulta(
-                        command.consulta().dataHora(),
-                        command.consulta().medico(),
-                        command.consulta().endereco(),
-                        command.consulta().localAtendimento(),
-                        command.consulta().especialidade(),
-                        command.consulta().unidadeId()
+                    command.consulta().dataHora(),
+                    command.consulta().medico(),
+                    command.consulta().especialidade(),
+                    command.consulta().endereco(),
+                    command.consulta().localAtendimento(),
+                    command.consulta().unidadeId()
                 ),
                 LocalDateTime.now()
         );
@@ -55,6 +55,13 @@ public class IngestaoServiceImpl implements IngestaoService {
     public void processarAcaoEmail(String token, String acao) {
         EventoRespostaUsuario evt = new EventoRespostaUsuario(token, acao, EventoRespostaUsuario.CanalNotificacao.EMAIL, LocalDateTime.now());
         respostaPublisher.publicar(evt);
+        log.info("[AcaoEmail] Resposta publicada - token={}, acao={}", token, acao);
+    }
+
+    @Override
+    public void processarAntecipacaoEmail(String token, String acao) {
+        EventoRespostaUsuario evt = new EventoRespostaUsuario(token, acao, EventoRespostaUsuario.CanalNotificacao.EMAIL, LocalDateTime.now());
+        respostaPublisher.publicarAntecipacao(evt);
         log.info("[AcaoEmail] Resposta publicada - token={}, acao={}", token, acao);
     }
 }

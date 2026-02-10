@@ -63,17 +63,17 @@ public class AntecipacaoNotificacaoService {
                     </div>
                 </div>
                 """,
-                    record.pacienteNome(), record.especialidade(), record.dataAtual(),
-                    record.dataNova(), record.localAtendimento(), record.endereco(),
+                    record.nomePacienteAntecipacao(), record.especialidadeAgendada(), record.dataHoraAgendada(),
+                    record.dataHoraConsultaAntecipada(), record.localAtendimentoConsultaAntecipada(), record.enderecoConsultaAntecipada(),
                     urlBase, urlBase
-            );
+            );  
 
-            helper.setTo(record.pacienteEmail());
-            helper.setSubject("Oportunidade: Antecipe sua consulta de " + record.especialidade());
+            helper.setTo(record.emailPacienteAntecipacao());
+            helper.setSubject("Oportunidade: Antecipe sua consulta de " + record.especialidadeAgendada());
             helper.setText(htmlContent, true);
 
             mailSender.send(message);
-            log.info("E-mail de antecipação enviado: {}", record.pacienteEmail());
+            log.info("E-mail de antecipação enviado: {}", record.emailPacienteAntecipacao());
 
         } catch (MessagingException e) {
             log.error("Erro ao enviar antecipação: {}", e.getMessage());

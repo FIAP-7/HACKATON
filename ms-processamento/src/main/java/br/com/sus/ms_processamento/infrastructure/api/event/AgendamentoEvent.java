@@ -1,15 +1,12 @@
-package br.com.sus.ingestao.core.usecase.model;
+package br.com.sus.ms_processamento.infrastructure.api.event;
 
 import java.time.LocalDateTime;
 
-/**
- * Command object representing the use-case input for creating/publishing an agendamento.
- * Lives in the core/usecase model to avoid core depending on entrypoint DTOs.
- */
-public record  AgendamentoCommand(
+public record AgendamentoEvent(
         String idExterno,
         Paciente paciente,
-        Consulta consulta
+        Consulta consulta,
+        LocalDateTime dataIngestao
 ) {
     public record Paciente(String nome, String telefone, String email) {}
     public record Consulta(LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId) {}

@@ -59,4 +59,12 @@ public class IngestaoServiceImpl implements IngestaoService {
         respostaPublisher.publicar(evt);
         log.info("[AcaoEmail] Resposta publicada - token={}, acao={}", token, acao);
     }
+
+    @Override
+    public void processarAntecipacaoEmail(String token, String acao) {
+        EventoRespostaUsuario evt = new EventoRespostaUsuario(token, acao, EventoRespostaUsuario.CanalNotificacao.EMAIL, LocalDateTime.now());
+        respostaPublisher.publicarAntecipacao(evt);
+        log.info("[AcaoEmail] Resposta publicada - token={}, acao={}", token, acao);
+    }
+
 }

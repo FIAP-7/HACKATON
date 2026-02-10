@@ -1,14 +1,16 @@
 package br.com.sus.ms_notificacao.dto;
 
 public record AntecipacaoNotificacaoRecord(
-        String pacienteNome,
-        String pacienteEmail,
-        String especialidade,
-        String dataNova,
-        String dataAtual,
-        String localAtendimento,
-        String endereco,
+        String especialidadeConsultaAntecipada,
+        String dataHoraConsultaAntecipada,
+        String enderecoConsultaAntecipada,
+        String localAtendimentoConsultaAntecipada,
+        String nomePacienteAntecipacao,
+        String emailPacienteAntecipacao,
+        String especialidadeAgendada,
+        String dataHoraAgendada,
+        String enderecoAgendada,
+        String localAtendimentoAgendada,
         String tokenUUID
-
 ) {
 }

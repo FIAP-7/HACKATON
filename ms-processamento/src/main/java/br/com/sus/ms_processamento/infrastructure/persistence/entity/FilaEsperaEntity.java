@@ -30,9 +30,15 @@ public class FilaEsperaEntity {
 
     private String pacienteTelefone;
 
+    private String pacienteEmail;
+
     private String especialidade;
 
-    private String unidadeSaude;
+    private String endereco;
+
+    private String localAtendimento;
+
+    private String unidadeId;
 
     private LocalDateTime dataSolicitacao;
 }

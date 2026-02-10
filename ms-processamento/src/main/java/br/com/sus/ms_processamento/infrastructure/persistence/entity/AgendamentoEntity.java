@@ -31,17 +31,45 @@ public class AgendamentoEntity {
 
     private String pacienteTelefone;
 
-    private LocalDateTime dataHoraConsulta;
+    private String pacienteEmail;
 
-    private String medicoNome;
+    private LocalDateTime dataHora;
+
+    private String medico;
 
     private String especialidade;
 
-    private String unidadeSaude;
+    private String endereco;
+
+    private String localAtendimento;
+
+    private String unidadeId;
 
     @Enumerated(EnumType.STRING)
     private StatusAgendamentoEnum status;
 
     private LocalDateTime dataLimiteConsulta;
+
+    private String tokenUUID;
+
+    @Override
+    public String toString() {
+        return "AgendamentoEntity{" +
+                "id=" + id +
+                ", idExterno='" + idExterno + '\'' +
+                ", pacienteNome='" + pacienteNome + '\'' +
+                ", pacienteTelefone='" + pacienteTelefone + '\'' +
+                ", pacienteEmail='" + pacienteEmail + '\'' +
+                ", dataHora=" + dataHora +
+                ", medico='" + medico + '\'' +
+                ", especialidade='" + especialidade + '\'' +
+                ", endereco='" + endereco + '\'' +
+                ", localAtendimento='" + localAtendimento + '\'' +
+                ", unidadeId='" + unidadeId + '\'' +
+                ", status=" + status +
+                ", dataLimiteConsulta=" + dataLimiteConsulta +
+                ", tokenUUID='" + tokenUUID + '\'' +
+                '}';
+    }
 
 }
