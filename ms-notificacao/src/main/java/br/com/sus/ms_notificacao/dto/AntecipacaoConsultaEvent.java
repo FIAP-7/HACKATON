@@ -16,12 +16,14 @@ public record AntecipacaoConsultaEvent(
                 Paciente paciente,
                 Consulta consulta
         ) {
-                public record Paciente(String nome, String telefone, String email) {
+                @JsonIgnoreProperties(ignoreUnknown = true)
+                public record Paciente(String nome, String cpf, String telefone, String email) {
                         @JsonCreator
                         public Paciente(@JsonProperty("nome") String nome,
+                                        @JsonProperty("cpf") String cpf,
                                         @JsonProperty("telefone") String telefone,
                                         @JsonProperty("email") String email) {
-                                this.nome = nome; this.telefone = telefone; this.email = email;
+                                this.nome = nome; this.cpf = cpf; this.telefone = telefone; this.email = email;
                         }
                 }
 
@@ -54,11 +56,7 @@ public record AntecipacaoConsultaEvent(
                 this.tokenUUID = tokenUUID;
         }
 
-        /**
-         * Factory method para converter AntecipacaoConsultaEvent em AntecipacaoNotificacaoRecord
-         */
         public static AntecipacaoNotificacaoRecord toRecord(AntecipacaoConsultaEvent event) {
-                
                 return new AntecipacaoNotificacaoRecord(
                         event.consultaCancelada().consulta().especialidade(),
                         event.consultaCancelada().consulta().dataHora() != null ? event.consultaCancelada().consulta().dataHora().toString() : null,

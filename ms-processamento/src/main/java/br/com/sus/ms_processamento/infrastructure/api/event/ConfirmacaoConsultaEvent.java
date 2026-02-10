@@ -10,7 +10,7 @@ public record ConfirmacaoConsultaEvent(
         Consulta consulta,
         LocalDateTime dataIngestao
 ) {
-    public record Paciente(String nome, String telefone, String email) {}
+    public record Paciente(String nome, String cpf, String telefone, String email) {}
     public record Consulta(LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId) {}
 
     /**
@@ -22,6 +22,7 @@ public record ConfirmacaoConsultaEvent(
                 event.idExterno(),
                 new Paciente(
                         event.paciente().nome(),
+                        event.paciente().cpf(),
                         event.paciente().telefone(),
                         event.paciente().email()
                 ),

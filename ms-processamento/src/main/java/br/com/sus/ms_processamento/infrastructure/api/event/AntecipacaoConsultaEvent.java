@@ -15,7 +15,7 @@ public record AntecipacaoConsultaEvent(
                 Paciente paciente,
                 Consulta consulta
         ) {
-                public record Paciente(String nome, String telefone, String email) {}
+                public record Paciente(String nome, String cpf, String telefone, String email) {}
                 public record Consulta(LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId) {}
         }
 
@@ -38,9 +38,10 @@ public record AntecipacaoConsultaEvent(
         private static DadosConsulta getDadosConsulta(AgendamentoEntity agendamentoEntity) {
                 return new DadosConsulta(
                         new DadosConsulta.Paciente(
-                                agendamentoEntity.getPacienteNome(),
-                                agendamentoEntity.getPacienteTelefone(),
-                                agendamentoEntity.getPacienteEmail()
+                                agendamentoEntity.getPaciente().getNome(),
+                                agendamentoEntity.getPaciente().getCpf(),
+                                agendamentoEntity.getPaciente().getTelefone(),
+                                agendamentoEntity.getPaciente().getEmail()
                         ),
                         new DadosConsulta.Consulta(
                                 agendamentoEntity.getDataHora(),

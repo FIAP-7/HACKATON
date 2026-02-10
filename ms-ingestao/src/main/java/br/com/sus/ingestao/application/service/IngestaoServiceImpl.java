@@ -38,7 +38,7 @@ public class IngestaoServiceImpl implements IngestaoService {
         // Monta evento com timestamp de ingestão e publica (US-02)
         AgendamentoEvent event = new AgendamentoEvent(
                 command.idExterno(),
-                new AgendamentoEvent.Paciente(command.paciente().nome(), command.paciente().telefone(), command.paciente().email()),
+                new AgendamentoEvent.Paciente(command.paciente().nome(), command.paciente().cpf(), command.paciente().telefone(), command.paciente().email()),
                 new AgendamentoEvent.Consulta(
                         command.consulta().dataHora(),
                         command.consulta().medico(),

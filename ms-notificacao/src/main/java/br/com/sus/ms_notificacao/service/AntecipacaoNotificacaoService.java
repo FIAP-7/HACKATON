@@ -1,6 +1,7 @@
 package br.com.sus.ms_notificacao.service;
 
 import br.com.sus.ms_notificacao.dto.AntecipacaoNotificacaoRecord;
+import br.com.sus.ms_notificacao.util.DateFormatterUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,9 @@ public class AntecipacaoNotificacaoService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             String urlBase = "http://localhost:8080/v1/notificacoes/antecipar/" + record.tokenUUID();
+
+            String dataAgendadaFormatada = DateFormatterUtil.formatarDataBrasileira(record.dataHoraAgendada());
+            String dataAntecipacaoFormatada = DateFormatterUtil.formatarDataBrasileira(record.dataHoraConsultaAntecipada());
 
             String htmlContent = String.format("""
                 <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
@@ -63,8 +67,8 @@ public class AntecipacaoNotificacaoService {
                     </div>
                 </div>
                 """,
-                    record.nomePacienteAntecipacao(), record.especialidadeAgendada(), record.dataHoraAgendada(),
-                    record.dataHoraConsultaAntecipada(), record.localAtendimentoConsultaAntecipada(), record.enderecoConsultaAntecipada(),
+                    record.nomePacienteAntecipacao(), record.especialidadeAgendada(), dataAgendadaFormatada,
+                    dataAntecipacaoFormatada, record.localAtendimentoConsultaAntecipada(), record.enderecoConsultaAntecipada(),
                     urlBase, urlBase
             );  
 

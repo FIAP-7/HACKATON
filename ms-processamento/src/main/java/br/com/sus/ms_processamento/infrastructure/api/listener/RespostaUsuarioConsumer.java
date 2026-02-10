@@ -4,9 +4,13 @@ import br.com.sus.ms_processamento.application.usecase.agendamento.AgendamentoUs
 import br.com.sus.ms_processamento.infrastructure.api.event.EventoRespostaUsuario;
 import br.com.sus.ms_processamento.infrastructure.api.producer.AntecipacaoConsultaProducer;
 import br.com.sus.ms_processamento.infrastructure.config.RabbitMqConfig;
-import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
 import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoJPARepository;
+import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoPacienteJPARepository;
+import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoPacienteEntity;
+import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
 import br.com.sus.ms_processamento.domain.model.StatusAgendamentoEnum;
+import java.util.Optional;
+
 import br.com.sus.ms_processamento.infrastructure.presenters.AgendamentoEntityPresenters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,19 +18,22 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Component
 public class RespostaUsuarioConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(RespostaUsuarioConsumer.class);
 
     private final AgendamentoJPARepository agendamentoJPARepository;
+    private final AgendamentoPacienteJPARepository agendamentoPacienteJPARepository;
     private final AntecipacaoConsultaProducer antecipacaoConsultaProducer;
     private final AgendamentoUseCase agendamentoUseCase;
     
-    public RespostaUsuarioConsumer(AgendamentoJPARepository agendamentoJPARepository, AntecipacaoConsultaProducer antecipacaoConsultaProducer, AgendamentoUseCase agendamentoUseCase) {
+    public RespostaUsuarioConsumer(AgendamentoJPARepository agendamentoJPARepository,
+                                   AgendamentoPacienteJPARepository agendamentoPacienteJPARepository,
+                                   AntecipacaoConsultaProducer antecipacaoConsultaProducer,
+                                   AgendamentoUseCase agendamentoUseCase) {
         this.agendamentoJPARepository = agendamentoJPARepository;
+        this.agendamentoPacienteJPARepository = agendamentoPacienteJPARepository;
         this.antecipacaoConsultaProducer = antecipacaoConsultaProducer;
         this.agendamentoUseCase = agendamentoUseCase;
     }
@@ -34,7 +41,6 @@ public class RespostaUsuarioConsumer {
     @RabbitListener(queues = RabbitMqConfig.QUEUE_RESPOSTA_USUARIO)
     @Transactional
     public void processarResposta(EventoRespostaUsuario event) {
-        // Validação de segurança: ignorar mensagens nulas
         if (event == null || event.identificador() == null) {
             log.warn("[RespostaUsuario] Mensagem nula ou sem identificador recebida. Descartando.");
             return;
@@ -45,30 +51,34 @@ public class RespostaUsuarioConsumer {
 
         String token = event.identificador();
 
-        // Busca no banco por tokenUUID
-        Optional<AgendamentoEntity> opt = agendamentoJPARepository.findByTokenUUID(token);
+        Optional<AgendamentoPacienteEntity> opt = agendamentoPacienteJPARepository.findByToken(token);
         if (opt.isEmpty()) {
-            log.warn("[RespostaUsuario] Token não encontrado no banco: {}", token);
+            log.warn("[RespostaUsuario] Token={} não encontrado em agendamento_paciente. Ignorando.", token);
             return;
         }
 
-        AgendamentoEntity agendamento = opt.get();
+        AgendamentoPacienteEntity ap = opt.get();
+        AgendamentoEntity agendamento = ap.getAgendamento();
         String resposta = event.resposta();
 
         try {
-            if ("CONFIRMAR".equalsIgnoreCase(resposta) || "SIM".equalsIgnoreCase(resposta)) {
+            if ("CONFIRMAR".equalsIgnoreCase(resposta) ) {
                 agendamento.setStatus(StatusAgendamentoEnum.CONFIRMADO_PACIENTE);
-            } else if ("CANCELAR".equalsIgnoreCase(resposta) || "NAO".equalsIgnoreCase(resposta) || "NÃO".equalsIgnoreCase(resposta)) {
+                ap.setStatus(StatusAgendamentoEnum.CONFIRMADO_PACIENTE.toString());
+            } else if ("CANCELAR".equalsIgnoreCase(resposta) || "NAO".equalsIgnoreCase(resposta)) {
+                ap.setStatus(StatusAgendamentoEnum.CANCELADO.toString());
                 agendamento.setStatus(StatusAgendamentoEnum.CANCELADO);
             } else {
                 log.info("[RespostaUsuario] Resposta desconhecida='{}'. Nenhuma ação aplicada.", resposta);
                 return;
             }
+            ap.setToken("");
+            agendamentoPacienteJPARepository.save(ap);
 
+            log.info("[RespostaUsuario] Atualizado agendamento id={} status={} (token removido)", agendamento.getId(), agendamento.getStatus());
             agendamentoUseCase.execute(AgendamentoEntityPresenters.toInput(agendamento));
-
         } catch (Exception e) {
-            log.error("[RespostaUsuario] Erro ao atualizar status para token={}", token, e);
+            log.error("[RespostaUsuario] Erro ao processar resposta para token={}", token, e);
         }
     }
 }

@@ -12,12 +12,13 @@ public record ConfirmacaoConsultaEvent(
         Consulta consulta,
         LocalDateTime dataIngestao
 ) {
-    public static record Paciente(String nome, String telefone, String email) {
+    public static record Paciente(String nome, String cpf, String telefone, String email) {
         @JsonCreator
         public Paciente(@JsonProperty("nome") String nome,
+                        @JsonProperty("cpf") String cpf,
                         @JsonProperty("telefone") String telefone,
                         @JsonProperty("email") String email) {
-            this.nome = nome; this.telefone = telefone; this.email = email;
+            this.nome = nome; this.cpf = cpf; this.telefone = telefone; this.email = email;
         }
     }
 

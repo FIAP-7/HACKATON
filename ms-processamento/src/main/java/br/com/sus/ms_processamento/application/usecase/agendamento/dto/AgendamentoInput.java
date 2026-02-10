@@ -9,6 +9,7 @@ import java.util.UUID;
 public record AgendamentoInput(UUID id,
                                String idExterno,
                                String pacienteNome,
+                               String pacienteCpf,
                                String pacienteTelefone,
                                String pacienteEmail,
                                LocalDateTime dataHora,

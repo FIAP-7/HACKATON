@@ -11,8 +11,6 @@ import java.util.UUID;
 
 public interface AgendamentoJPARepository extends JpaRepository<AgendamentoEntity, UUID> {
 
-	Optional<AgendamentoEntity> findByTokenUUID(String tokenUUID);
-
 	Optional<AgendamentoEntity> findByIdExterno(String idExterno);
 
 	List<AgendamentoEntity> findTop5ByStatusAndEspecialidadeAndUnidadeIdAndDataLimiteConsultaAfter(

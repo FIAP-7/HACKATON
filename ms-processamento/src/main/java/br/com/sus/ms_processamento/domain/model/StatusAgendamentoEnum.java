@@ -6,5 +6,6 @@ public enum StatusAgendamentoEnum {
     CONFIRMADO_PACIENTE,
     CONFIRMADO_AUTOMATICO,
     CANCELADO,
+    ANTECIPAR,
     REALOCADO
 }

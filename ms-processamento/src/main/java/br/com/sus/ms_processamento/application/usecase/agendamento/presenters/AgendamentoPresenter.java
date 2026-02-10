@@ -3,15 +3,17 @@ package br.com.sus.ms_processamento.application.usecase.agendamento.presenters;
 import br.com.sus.ms_processamento.application.usecase.agendamento.dto.AgendamentoInput;
 import br.com.sus.ms_processamento.application.usecase.agendamento.dto.AgendamentoOutput;
 import br.com.sus.ms_processamento.domain.model.Agendamento;
+import br.com.sus.ms_processamento.domain.model.Paciente;
 
 public class AgendamentoPresenter {
 
     public static AgendamentoOutput agendamentoOutput(Agendamento agendamento) {
         return new AgendamentoOutput(agendamento.getId(),
                 agendamento.getIdExterno(),
-                agendamento.getPacienteNome(),
-                agendamento.getPacienteTelefone(),
-                agendamento.getPacienteEmail(),
+                agendamento.getPaciente().getNome(),
+                agendamento.getPaciente().getCpf(),
+                agendamento.getPaciente().getTelefone(),
+                agendamento.getPaciente().getEmail(),
                 agendamento.getDataHora(),
                 agendamento.getMedico(),
                 agendamento.getEspecialidade(),
@@ -24,11 +26,17 @@ public class AgendamentoPresenter {
     }
 
     public static Agendamento toDomain(AgendamentoInput agendamentoInput) {
-        return Agendamento.create(agendamentoInput.id(),
-                agendamentoInput.idExterno(),
+        Paciente paciente = Paciente.create(
+                agendamentoInput.pacienteCpf(),
                 agendamentoInput.pacienteNome(),
                 agendamentoInput.pacienteTelefone(),
-                agendamentoInput.pacienteEmail(),
+                agendamentoInput.pacienteEmail()
+        );
+        
+        return Agendamento.create(
+                agendamentoInput.id(),
+                agendamentoInput.idExterno(),
+                paciente,
                 agendamentoInput.dataHora(),
                 agendamentoInput.medico(),
                 agendamentoInput.especialidade(),

@@ -36,7 +36,6 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
 
-        // Only enforce API key for protected integration endpoints
         boolean isProtectedPath = path.startsWith("/api/v1/integracao/") || 
                                    path.equals("/api/v1/integracao") ||
                                    ("POST".equalsIgnoreCase(request.getMethod()) && path.startsWith("/api/v1/integracao"));
@@ -52,7 +51,6 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Set authentication with ROLE_INTEGRADOR
         AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 "integrador", null, List.of(new SimpleGrantedAuthority("ROLE_INTEGRADOR"))
         );

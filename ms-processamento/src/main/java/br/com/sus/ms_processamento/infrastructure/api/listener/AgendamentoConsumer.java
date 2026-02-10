@@ -1,19 +1,24 @@
 package br.com.sus.ms_processamento.infrastructure.api.listener;
 
+import br.com.sus.ms_processamento.application.usecase.agendamento.AgendamentoUseCase;
+import br.com.sus.ms_processamento.infrastructure.api.AgendamentoRequest;
 import br.com.sus.ms_processamento.infrastructure.api.event.AgendamentoEvent;
 import br.com.sus.ms_processamento.infrastructure.api.event.ConfirmacaoConsultaEvent;
 import br.com.sus.ms_processamento.infrastructure.api.producer.ConfirmacaoConsultaProducer;
 import br.com.sus.ms_processamento.infrastructure.config.RabbitMqConfig;
-import br.com.sus.ms_processamento.application.usecase.agendamento.AgendamentoUseCase;
-import br.com.sus.ms_processamento.infrastructure.api.AgendamentoRequest;
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
+import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoPacienteEntity;
+import br.com.sus.ms_processamento.infrastructure.persistence.entity.PacienteEntity;
 import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoJPARepository;
+import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoPacienteJPARepository;
+import br.com.sus.ms_processamento.infrastructure.persistence.repository.PacienteJPARepository;
 import br.com.sus.ms_processamento.domain.model.StatusAgendamentoEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Component
@@ -21,29 +26,43 @@ public class AgendamentoConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(AgendamentoConsumer.class);
 
-        private final AgendamentoUseCase agendamentoUseCase;
         private final AgendamentoJPARepository agendamentoRepository;
+        private final PacienteJPARepository pacienteRepository;
+        private final AgendamentoPacienteJPARepository agendamentoPacienteRepository;
         private final ConfirmacaoConsultaProducer confirmacaoProducer;
+    private final AgendamentoUseCase agendamentoUseCase;
 
-        public AgendamentoConsumer(AgendamentoUseCase agendamentoUseCase,
-                                   AgendamentoJPARepository agendamentoRepository,
-                                   ConfirmacaoConsultaProducer confirmacaoProducer) {
-                this.agendamentoUseCase = agendamentoUseCase;
+    public AgendamentoConsumer(AgendamentoJPARepository agendamentoRepository,
+                                   PacienteJPARepository pacienteRepository,
+                                   AgendamentoPacienteJPARepository agendamentoPacienteRepository,
+                                   ConfirmacaoConsultaProducer confirmacaoProducer, AgendamentoUseCase agendamentoUseCase) {
                 this.agendamentoRepository = agendamentoRepository;
+                this.pacienteRepository = pacienteRepository;
+                this.agendamentoPacienteRepository = agendamentoPacienteRepository;
                 this.confirmacaoProducer = confirmacaoProducer;
-        }
+        this.agendamentoUseCase = agendamentoUseCase;
+    }
 
     @RabbitListener(queues = RabbitMqConfig.QUEUE_AGENDAMENTO)
     public void processarAgendamento(AgendamentoEvent event) {
         try {
             log.info("[RabbitMQ] Agendamento recebido na fila. idExterno={}", event.toString());
             String tokenUUID = UUID.randomUUID().toString();
-            // 1. Salvar agendamento no PostgreSQL
+            
+            PacienteEntity pacienteEntity = pacienteRepository.findById(event.paciente().cpf())
+                    .orElseGet(() -> {
+                        PacienteEntity novoPaciente = PacienteEntity.builder()
+                                .nome(event.paciente().nome())
+                                .cpf(event.paciente().cpf())
+                                .telefone(event.paciente().telefone())
+                                .email(event.paciente().email())
+                                .build();
+                        return pacienteRepository.save(novoPaciente);
+                    });
+            
             AgendamentoEntity agendamentoEntity = AgendamentoEntity.builder()
                     .idExterno(event.idExterno())
-                    .pacienteNome(event.paciente().nome())
-                    .pacienteTelefone(event.paciente().telefone())
-                    .pacienteEmail(event.paciente().email())
+                    .paciente(pacienteEntity)
                     .dataHora(event.consulta().dataHora())
                     .medico(event.consulta().medico())
                     .especialidade(event.consulta().especialidade())
@@ -52,27 +71,32 @@ public class AgendamentoConsumer {
                     .unidadeId(event.consulta().unidadeId())
                     .status(StatusAgendamentoEnum.PENDENTE)
                     .dataLimiteConsulta(event.consulta().dataHora())
-                    .tokenUUID(tokenUUID)
                     .build();
-
 
             AgendamentoEntity agendamentoSalvo = agendamentoRepository.save(agendamentoEntity);
             log.info("[PostgreSQL] Agendamento salvo com sucesso. dado={}",  agendamentoSalvo.toString());
 
+            AgendamentoPacienteEntity agendamentoPaciente = AgendamentoPacienteEntity.builder()
+                    .paciente(pacienteEntity)
+                    .agendamento(agendamentoSalvo)
+                    .dataRegistro(LocalDateTime.now())
+                    .status(StatusAgendamentoEnum.PENDENTE.toString())
+                    .token(tokenUUID)
+                    .build();
+            agendamentoPacienteRepository.save(agendamentoPaciente);
+            log.info("[PostgreSQL] Registro agendamento_paciente salvo com sucesso.");
 
-            // 3. Criar evento de confirmação com o token
             ConfirmacaoConsultaEvent confirmacaoEvent = ConfirmacaoConsultaEvent.from(event, tokenUUID);
 
-            // 4. Enviar evento para a fila de confirmação
             confirmacaoProducer.enviarConfirmacao(confirmacaoEvent);
             log.info("[RabbitMQ] Mensagem de confirmação enviada. idExterno={}, tokenUUID={}", 
                     event.idExterno(), tokenUUID);
 
-            // 5. Executar use case para confirmar agendamento (fluxo existente)
             AgendamentoRequest request = new AgendamentoRequest(
                     agendamentoSalvo.getId(),
                     event.idExterno(),
                     event.paciente().nome(),
+                    event.paciente().cpf(),
                     event.paciente().telefone(),
                     event.paciente().email(),
                     event.consulta().dataHora(),

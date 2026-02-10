@@ -52,7 +52,7 @@ public class AgendamentoController {
             @org.springframework.web.bind.annotation.RequestBody AgendamentoRequest request) {
         AgendamentoCommand command = new AgendamentoCommand(
                 request.idExterno(),
-                new AgendamentoCommand.Paciente(request.paciente().nome(), request.paciente().telefone(), request.paciente().email()),
+                new AgendamentoCommand.Paciente(request.paciente().nome(), request.paciente().cpf(), request.paciente().telefone(), request.paciente().email()),
                 new AgendamentoCommand.Consulta(
                         request.consulta().dataHora(),
                         request.consulta().medico(),

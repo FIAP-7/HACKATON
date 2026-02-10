@@ -10,9 +10,7 @@ public class AgendamentoEntityPresenters {
         return AgendamentoEntity.builder()
                 .id(agendamento.getId())
                 .idExterno(agendamento.getIdExterno())
-                .pacienteNome(agendamento.getPacienteNome())
-                .pacienteTelefone(agendamento.getPacienteTelefone())
-                .pacienteEmail(agendamento.getPacienteEmail())
+                .paciente(PacienteEntityPresenters.toEntity(agendamento.getPaciente()))
                 .dataHora(agendamento.getDataHora())
                 .medico(agendamento.getMedico())
                 .especialidade(agendamento.getEspecialidade())
@@ -27,9 +25,7 @@ public class AgendamentoEntityPresenters {
     public static Agendamento toDomain(AgendamentoEntity agendamento) {
         return Agendamento.create(agendamento.getId(),
                 agendamento.getIdExterno(),
-                agendamento.getPacienteNome(),
-                agendamento.getPacienteTelefone(),
-                agendamento.getPacienteEmail(),
+                PacienteEntityPresenters.toDomain(agendamento.getPaciente()),
                 agendamento.getDataHora(),
                 agendamento.getMedico(),
                 agendamento.getEspecialidade(),
@@ -45,9 +41,10 @@ public class AgendamentoEntityPresenters {
         return new AgendamentoInput(
                 agendamento.getId(),
                 agendamento.getIdExterno(),
-                agendamento.getPacienteNome(),
-                agendamento.getPacienteTelefone(),
-                agendamento.getPacienteEmail(),
+                agendamento.getPaciente().getNome(),
+                agendamento.getPaciente().getCpf(),
+                agendamento.getPaciente().getTelefone(),
+                agendamento.getPaciente().getEmail(),
                 agendamento.getDataHora(),
                 agendamento.getMedico(),
                 agendamento.getEspecialidade(),

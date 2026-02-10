@@ -27,11 +27,9 @@ public class AgendamentoEntity {
 
     private String idExterno;
 
-    private String pacienteNome;
-
-    private String pacienteTelefone;
-
-    private String pacienteEmail;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "paciente_id", nullable = false)
+    private PacienteEntity paciente;
 
     private LocalDateTime dataHora;
 
@@ -50,16 +48,12 @@ public class AgendamentoEntity {
 
     private LocalDateTime dataLimiteConsulta;
 
-    private String tokenUUID;
-
     @Override
     public String toString() {
         return "AgendamentoEntity{" +
                 "id=" + id +
                 ", idExterno='" + idExterno + '\'' +
-                ", pacienteNome='" + pacienteNome + '\'' +
-                ", pacienteTelefone='" + pacienteTelefone + '\'' +
-                ", pacienteEmail='" + pacienteEmail + '\'' +
+                ", paciente=" + paciente +
                 ", dataHora=" + dataHora +
                 ", medico='" + medico + '\'' +
                 ", especialidade='" + especialidade + '\'' +
@@ -68,7 +62,6 @@ public class AgendamentoEntity {
                 ", unidadeId='" + unidadeId + '\'' +
                 ", status=" + status +
                 ", dataLimiteConsulta=" + dataLimiteConsulta +
-                ", tokenUUID='" + tokenUUID + '\'' +
                 '}';
     }
 

@@ -16,11 +16,7 @@ public class Agendamento {
 
     private String idExterno;
 
-    private String pacienteNome;
-
-    private String pacienteTelefone;
-
-    private String pacienteEmail;
+    private Paciente paciente;
 
     private LocalDateTime dataHora;
 
@@ -38,15 +34,13 @@ public class Agendamento {
 
     private LocalDateTime dataLimiteConsulta;
 
-    public static Agendamento create(UUID id, String idExterno, String pacienteNome, String pacienteTelefone, String pacienteEmail, LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId, StatusAgendamentoEnum status, LocalDateTime dataLimiteConsulta) {
+    public static Agendamento create(UUID id, String idExterno, Paciente paciente, LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId, StatusAgendamentoEnum status, LocalDateTime dataLimiteConsulta) {
 
         Agendamento agendamento = new Agendamento();
 
         agendamento.setId(id);
         agendamento.setIdExterno(idExterno);
-        agendamento.setPacienteNome(pacienteNome);
-        agendamento.setPacienteTelefone(pacienteTelefone);
-        agendamento.setPacienteEmail(pacienteEmail);
+        agendamento.setPaciente(paciente);
         agendamento.setDataHora(dataHora);
         agendamento.setMedico(medico);
         agendamento.setEspecialidade(especialidade);
@@ -59,14 +53,12 @@ public class Agendamento {
         return agendamento;
     }
 
-    public static Agendamento create(String idExterno, String pacienteNome, String pacienteTelefone, String pacienteEmail, LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId, StatusAgendamentoEnum status, LocalDateTime dataLimiteConsulta) {
+    public static Agendamento create(String idExterno, Paciente paciente, LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId, StatusAgendamentoEnum status, LocalDateTime dataLimiteConsulta) {
 
         Agendamento agendamento = new Agendamento();
 
         agendamento.setIdExterno(idExterno);
-        agendamento.setPacienteNome(pacienteNome);
-        agendamento.setPacienteTelefone(pacienteTelefone);
-        agendamento.setPacienteEmail(pacienteEmail);
+        agendamento.setPaciente(paciente);
         agendamento.setDataHora(dataHora);
         agendamento.setMedico(medico);
         agendamento.setEspecialidade(especialidade);
@@ -79,14 +71,12 @@ public class Agendamento {
         return agendamento;
     }
 
-    public static Agendamento create(String idExterno, String pacienteNome, String pacienteTelefone, String pacienteEmail, LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId, LocalDateTime dataLimiteConsulta) {
+    public static Agendamento create(String idExterno, Paciente paciente, LocalDateTime dataHora, String medico, String especialidade, String endereco, String localAtendimento, String unidadeId, LocalDateTime dataLimiteConsulta) {
 
         Agendamento agendamento = new Agendamento();
 
         agendamento.setIdExterno(idExterno);
-        agendamento.setPacienteNome(pacienteNome);
-        agendamento.setPacienteTelefone(pacienteTelefone);
-        agendamento.setPacienteEmail(pacienteEmail);
+        agendamento.setPaciente(paciente);
         agendamento.setDataHora(dataHora);
         agendamento.setMedico(medico);
         agendamento.setEspecialidade(especialidade);

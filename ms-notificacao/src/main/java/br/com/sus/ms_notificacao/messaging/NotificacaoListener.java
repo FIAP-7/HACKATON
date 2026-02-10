@@ -21,7 +21,6 @@ public class NotificacaoListener {
 
     @RabbitListener(queues = "sus.processamento.confirmacao-usuario")
     public void onMessageConfirmacao(ConfirmacaoConsultaEvent event) {
-        // Mapear evento recebido para DTO interno de notificação
         ConfirmacaoNotificacaoRecord request = new ConfirmacaoNotificacaoRecord(
                 event.paciente().nome(),
                 event.paciente().email(),
