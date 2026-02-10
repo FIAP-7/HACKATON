@@ -4,6 +4,8 @@ import br.com.sus.ms_processamento.application.gateway.IAgendamentoGateway;
 import br.com.sus.ms_processamento.domain.model.Agendamento;
 import br.com.sus.ms_processamento.domain.model.StatusAgendamentoEnum;
 
+import java.time.LocalDateTime;
+
 public class AgendamentoPendenteHandler implements IAgendamentoValidation {
 
     private final IAgendamentoGateway agendamentoGateway;
@@ -15,11 +17,18 @@ public class AgendamentoPendenteHandler implements IAgendamentoValidation {
     @Override
     public void validate(Agendamento agendamento) {
         if (StatusAgendamentoEnum.PENDENTE.equals(agendamento.getStatus())) {
-            agendamento.setStatus(StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO);
+            LocalDateTime dataConfirmar = agendamento.getDataHora().minusDays(7);
 
-            agendamentoGateway.salvar(agendamento);
+            if(dataConfirmar.isBefore(LocalDateTime.now()) && agendamento.getDataHora().isAfter(LocalDateTime.now())) {
+                agendamento.setStatus(StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO);
 
-            agendamentoGateway.enviarConfirmacao(agendamento);
+                agendamentoGateway.salvar(agendamento);
+                agendamentoGateway.enviarConfirmacao(agendamento);
+            } else {
+                if (agendamento.getId() == null) {
+                    agendamentoGateway.salvar(agendamento);
+                }
+            }
         }
     }
 }
