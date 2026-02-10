@@ -1,7 +1,6 @@
 package br.com.sus.ms_processamento.infrastructure.api;
 
-import br.com.sus.ms_processamento.application.usecase.agendamento.ConfirmarAgendamentoUseCase;
-import org.springframework.web.bind.annotation.GetMapping;
+import br.com.sus.ms_processamento.application.usecase.agendamento.AgendamentoUseCase;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,10 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AgendamentoController {
 
-    private final ConfirmarAgendamentoUseCase confirmarAgendamentoUseCase;
+    private final AgendamentoUseCase agendamentoUseCase;
 
-    public AgendamentoController(ConfirmarAgendamentoUseCase confirmarAgendamentoUseCase) {
-        this.confirmarAgendamentoUseCase = confirmarAgendamentoUseCase;
+    public AgendamentoController(AgendamentoUseCase agendamentoUseCase) {
+        this.agendamentoUseCase = agendamentoUseCase;
     }
 
     @PostMapping
@@ -20,7 +19,7 @@ public class AgendamentoController {
 
         System.out.println("agendamentoRequest = " + agendamentoRequest);
 
-        confirmarAgendamentoUseCase.execute(agendamentoRequest.toInput());
+        agendamentoUseCase.execute(agendamentoRequest.toInput());
 
         return "Agendamento salvo com sucesso!";
     }

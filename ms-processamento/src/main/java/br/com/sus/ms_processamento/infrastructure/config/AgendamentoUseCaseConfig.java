@@ -1,11 +1,8 @@
 package br.com.sus.ms_processamento.infrastructure.config;
 
 import br.com.sus.ms_processamento.application.gateway.IAgendamentoGateway;
-import br.com.sus.ms_processamento.application.usecase.agendamento.ConfirmarAgendamentoUseCase;
-import br.com.sus.ms_processamento.application.usecase.agendamento.validation.AgendamentoCanceladoHandler;
-import br.com.sus.ms_processamento.application.usecase.agendamento.validation.AgendamentoPendenteHandler;
-import br.com.sus.ms_processamento.application.usecase.agendamento.validation.AgendamentoValidationChain;
-import br.com.sus.ms_processamento.application.usecase.agendamento.validation.IAgendamentoValidation;
+import br.com.sus.ms_processamento.application.usecase.agendamento.AgendamentoUseCase;
+import br.com.sus.ms_processamento.application.usecase.agendamento.validation.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,6 +21,11 @@ public class AgendamentoUseCaseConfig {
         return new AgendamentoCanceladoHandler(agendamentoGateway);
     }
 
+    @Bean
+    public AgendamentoConfirmadoHandler agendamentoConfirmadoHandler(IAgendamentoGateway agendamentoGateway) {
+        return new AgendamentoConfirmadoHandler(agendamentoGateway);
+    }
+
 
 
     @Bean
@@ -33,10 +35,10 @@ public class AgendamentoUseCaseConfig {
 
 
     @Bean
-    public ConfirmarAgendamentoUseCase confirmarAgendamentoUseCase(
+    public AgendamentoUseCase confirmarAgendamentoUseCase(
             IAgendamentoGateway agendamentoGateway,
             AgendamentoValidationChain agendamentoValidationChain
     ){
-        return ConfirmarAgendamentoUseCase.create(agendamentoGateway, agendamentoValidationChain);
+        return AgendamentoUseCase.create(agendamentoGateway, agendamentoValidationChain);
     }
 }

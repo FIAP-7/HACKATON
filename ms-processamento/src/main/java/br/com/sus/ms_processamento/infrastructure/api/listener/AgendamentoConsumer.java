@@ -4,7 +4,7 @@ import br.com.sus.ms_processamento.infrastructure.api.event.AgendamentoEvent;
 import br.com.sus.ms_processamento.infrastructure.api.event.ConfirmacaoConsultaEvent;
 import br.com.sus.ms_processamento.infrastructure.api.producer.ConfirmacaoConsultaProducer;
 import br.com.sus.ms_processamento.infrastructure.config.RabbitMqConfig;
-import br.com.sus.ms_processamento.application.usecase.agendamento.ConfirmarAgendamentoUseCase;
+import br.com.sus.ms_processamento.application.usecase.agendamento.AgendamentoUseCase;
 import br.com.sus.ms_processamento.infrastructure.api.AgendamentoRequest;
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
 import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoJPARepository;
@@ -21,14 +21,14 @@ public class AgendamentoConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(AgendamentoConsumer.class);
 
-        private final ConfirmarAgendamentoUseCase confirmarAgendamentoUseCase;
+        private final AgendamentoUseCase agendamentoUseCase;
         private final AgendamentoJPARepository agendamentoRepository;
         private final ConfirmacaoConsultaProducer confirmacaoProducer;
 
-        public AgendamentoConsumer(ConfirmarAgendamentoUseCase confirmarAgendamentoUseCase,
-                                                           AgendamentoJPARepository agendamentoRepository,
-                                                           ConfirmacaoConsultaProducer confirmacaoProducer) {
-                this.confirmarAgendamentoUseCase = confirmarAgendamentoUseCase;
+        public AgendamentoConsumer(AgendamentoUseCase agendamentoUseCase,
+                                   AgendamentoJPARepository agendamentoRepository,
+                                   ConfirmacaoConsultaProducer confirmacaoProducer) {
+                this.agendamentoUseCase = agendamentoUseCase;
                 this.agendamentoRepository = agendamentoRepository;
                 this.confirmacaoProducer = confirmacaoProducer;
         }
@@ -90,7 +90,7 @@ public class AgendamentoConsumer {
                     event.paciente().nome(),
                     event.consulta().dataHora());
 
-            confirmarAgendamentoUseCase.execute(request.toInput());
+            agendamentoUseCase.execute(request.toInput());
 
             log.info("[RabbitMQ] Agendamento processado com sucesso. idExterno={}, tokenUUID={}", 
                     event.idExterno(), tokenUUID);

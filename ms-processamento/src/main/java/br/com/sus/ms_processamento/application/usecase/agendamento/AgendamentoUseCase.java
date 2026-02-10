@@ -7,18 +7,18 @@ import br.com.sus.ms_processamento.application.usecase.agendamento.presenters.Ag
 import br.com.sus.ms_processamento.application.usecase.agendamento.validation.AgendamentoValidationChain;
 import br.com.sus.ms_processamento.domain.model.Agendamento;
 
-public class ConfirmarAgendamentoUseCase {
+public class AgendamentoUseCase {
 
     private final IAgendamentoGateway agendamentoGateway;
     private final AgendamentoValidationChain agendamentoValidationChain;
 
-    private ConfirmarAgendamentoUseCase(IAgendamentoGateway agendamentoGateway, AgendamentoValidationChain agendamentoValidationChain) {
+    private AgendamentoUseCase(IAgendamentoGateway agendamentoGateway, AgendamentoValidationChain agendamentoValidationChain) {
         this.agendamentoGateway = agendamentoGateway;
         this.agendamentoValidationChain = agendamentoValidationChain;
     }
 
-    public static ConfirmarAgendamentoUseCase create(IAgendamentoGateway agendamentoGateway, AgendamentoValidationChain agendamentoValidationChain) {
-        return new ConfirmarAgendamentoUseCase(agendamentoGateway, agendamentoValidationChain);
+    public static AgendamentoUseCase create(IAgendamentoGateway agendamentoGateway, AgendamentoValidationChain agendamentoValidationChain) {
+        return new AgendamentoUseCase(agendamentoGateway, agendamentoValidationChain);
     }
 
     public AgendamentoOutput execute(AgendamentoInput agendamentoInput) {
