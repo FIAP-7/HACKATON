@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class ConfirmacaoNotificacaoService {
 
     private final JavaMailSender mailSender;
+    private final TemplateRenderer templateRenderer;
 
     public void enviarEmailAgendamento(ConfirmacaoNotificacaoRecord record) {
         try {
@@ -26,41 +29,15 @@ public class ConfirmacaoNotificacaoService {
 
             String dataConsultaFormatada = DateFormatterUtil.formatarDataBrasileira(record.dataConsulta());
 
-            String htmlContent = String.format("""
-                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;'>
-                    <div style='text-align: center; border-bottom: 2px solid #007bff; padding-bottom: 10px;'>
-                        <h2 style='color: #007bff; margin: 0;'>SUS Ágil - Confirmação de Consulta</h2>
-                        <p style='font-size: 14px; color: #555;'>Sua consulta está agendada!</p>
-                    </div>
-                    
-                    <div style='padding: 20px 0;'>
-                        <p>Olá, <strong>%s</strong>!</p>
-                        <p>Sua consulta de <strong>%s</strong> está agendada.</p>
-                        
-                        <div style='background-color: #e8f4f8; padding: 15px; border-radius: 5px; border-left: 4px solid #007bff; margin-top: 15px;'>
-                            <p style='margin: 5px 0;'><strong>📅 Data e Hora:</strong> %s</p>
-                            <p style='margin: 5px 0;'><strong>🏥 Local:</strong> %s</p>
-                            <p style='margin: 5px 0;'><strong>📍 Endereço:</strong> %s</p>
-                        </div>
-                        
-                        <p style='color: #d9534f; font-size: 13px; margin-top: 15px; line-height: 1.6;'>
-                            <strong>⚠️ Atenção:</strong> Por favor, confirme seu comparecimento ou cancele esta consulta. Se você não puder comparecer, é fundamental cancelar para que possamos oferecer esta vaga a outro paciente que aguarda atendimento. A ausência sem aviso prévio prejudica pacientes que precisam muito do atendimento no SUS.
-                        </p>
-                    </div>
-                    
-                    <div style='text-align: center; margin: 25px 0;'>
-                        <a href='%s&acao=CONFIRMAR' style='background-color: #007bff; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-right: 10px;'>Confirmar Presença</a>
-                        <a href='%s&acao=CANCELAR' style='background-color: #dc3545; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Cancelar Consulta</a>
-                    </div>
-                    
-                    <hr style='margin: 30px 0; border: 0; border-top: 1px solid #eee;'>
-                    <p style='font-size: 12px; color: #777;'>Esta é uma mensagem automática do sistema SUS Ágil.</p>
-                </div>
-                """,
-                    record.pacienteNome(), record.especialidade(), dataConsultaFormatada,
-                    record.localAtendimento(), record.endereco(),
-                    urlBase, urlBase
-            );
+            Map<String, String> vars = new HashMap<>();
+            vars.put("nome", record.pacienteNome());
+            vars.put("especialidade", record.especialidade());
+            vars.put("data", dataConsultaFormatada);
+            vars.put("local", record.localAtendimento());
+            vars.put("endereco", record.endereco());
+            vars.put("url", urlBase);
+
+            String htmlContent = templateRenderer.render("templates/confirmacao.html", vars);
 
             helper.setFrom("nao-responda@susagil.com.br");
             helper.setTo(record.pacienteEmail());

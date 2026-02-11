@@ -70,7 +70,8 @@ public class DataSeederConfig implements CommandLineRunner {
             List<AgendamentoEntity> agendamentosSalvos = agendamentoJPARepository.saveAll(agendamentos);
             log.info("[DataSeeder] {} registros de teste inseridos com sucesso!", agendamentosSalvos.size());
 
-            for (AgendamentoEntity ag : agendamentosSalvos) {
+           /*
+           for (AgendamentoEntity ag : agendamentosSalvos) {
                 AgendamentoPacienteEntity ap = AgendamentoPacienteEntity.builder()
                         .paciente(ag.getPaciente())
                         .agendamento(ag)
@@ -80,6 +81,7 @@ public class DataSeederConfig implements CommandLineRunner {
                         .build();
                 agendamentoPacienteJPARepository.save(ap);
             }
+            */
         } else {
             log.info("[DataSeeder] Tabela agendamento já contém dados. Pulando população de testes.");
         }
@@ -87,28 +89,37 @@ public class DataSeederConfig implements CommandLineRunner {
 
     private AgendamentoEntity criarAgendamento(String idExterno, String pacienteNome, String cpf, 
                                                String pacienteTelefone, StatusAgendamentoEnum status) {
-        PacienteEntity pacienteSalvo = pacienteJPARepository.findById(cpf)
-                .orElseGet(() -> {
-                    PacienteEntity novoPaciente = PacienteEntity.builder()
-                            .nome(pacienteNome)
-                            .cpf(cpf)
-                            .telefone(pacienteTelefone)
-                            .email("jh93.dev@gmail.com")
-                            .build();
-                    return pacienteJPARepository.save(novoPaciente);
-                });
         
+        final String seederEmail = System.getenv("SEEDER_EMAIL") != null && !System.getenv("SEEDER_EMAIL").isBlank()
+            ? System.getenv("SEEDER_EMAIL")
+            : "email.teste@gmail.com";
+
+        PacienteEntity pacienteSalvo = pacienteJPARepository.findById(cpf)
+            .orElseGet(() -> {
+                PacienteEntity novoPaciente = PacienteEntity.builder()
+                    .nome(pacienteNome)
+                    .cpf(cpf)
+                    .telefone(pacienteTelefone)
+                    .email(seederEmail)
+                    .build();
+                return pacienteJPARepository.save(novoPaciente);
+            });
+        
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime dataHora = now.plusDays(5).withHour(10).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime dataLimite = now.plusDays(3).withHour(23).withMinute(59).withSecond(59).withNano(0);
+
         return AgendamentoEntity.builder()
-                .idExterno(idExterno)
-                .paciente(pacienteSalvo)
-                .dataHora(LocalDateTime.of(2026, 2, 15, 10, 0))
-                .medico("Dr. especialista")
-                .especialidade("Cardiologia")
-                .endereco("Endereço teste")
-                .localAtendimento("Consultório")
-                .unidadeId("UNI-001")
-                .status(status)
-                .dataLimiteConsulta(LocalDateTime.of(2026, 2, 14, 23, 59, 59))
-                .build();
+            .idExterno(idExterno)
+            .paciente(pacienteSalvo)
+            .dataHora(dataHora)
+            .medico("Dr. Drauzio Varella")
+            .especialidade("Oncologista")
+            .endereco("Av. Albert Einstein, 627/701 - Morumbi, São Paulo - SP, 05652-900")
+            .localAtendimento("Hospital Albert Einstein")
+            .unidadeId("UNI-001")
+            .status(status)
+            .dataLimiteConsulta(dataLimite)
+            .build();
     }
 }

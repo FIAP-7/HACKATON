@@ -71,6 +71,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=batata@
       - SERVER_PORT=8081
+      - SEEDER_EMAIL=${SEEDER_EMAIL:-seu.email@gmail.com}
     depends_on:
       rabbitmq:
         condition: service_healthy

@@ -56,20 +56,5 @@ public record AntecipacaoConsultaEvent(
                 this.tokenUUID = tokenUUID;
         }
 
-        public static AntecipacaoNotificacaoRecord toRecord(AntecipacaoConsultaEvent event) {
-                return new AntecipacaoNotificacaoRecord(
-                        event.consultaCancelada().consulta().especialidade(),
-                        event.consultaCancelada().consulta().dataHora() != null ? event.consultaCancelada().consulta().dataHora().toString() : null,
-                        event.consultaCancelada().consulta().endereco(),
-                        event.consultaCancelada().consulta().localAtendimento(),
-                        event.consultaAntecipada().paciente().nome(),
-                        event.consultaAntecipada().paciente().email(),
-                        event.consultaAntecipada().consulta().especialidade(),
-                        event.consultaAntecipada().consulta().dataHora() != null ? event.consultaAntecipada().consulta().dataHora().toString() : null,
-                        event.consultaAntecipada().consulta().endereco(),
-                        event.consultaAntecipada().consulta().localAtendimento(),
-                        event.tokenUUID()
-                );
-        }
 }
 

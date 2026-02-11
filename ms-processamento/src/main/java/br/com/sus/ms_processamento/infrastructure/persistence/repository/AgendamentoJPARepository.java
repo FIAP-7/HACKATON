@@ -19,4 +19,9 @@ public interface AgendamentoJPARepository extends JpaRepository<AgendamentoEntit
 			String unidadeId,
 			LocalDateTime dataLimiteConsulta);
 
+	    Optional<AgendamentoEntity> findTopByPaciente_CpfAndEspecialidadeAndIdNotOrderByDataHoraAsc(
+		    String cpf,
+		    String especialidade,
+		    UUID idNot);
+
 }

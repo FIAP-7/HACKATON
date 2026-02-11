@@ -3,6 +3,7 @@ package br.com.sus.ms_processamento.infrastructure.gateway;
 import br.com.sus.ms_processamento.application.gateway.IAgendamentoGateway;
 import br.com.sus.ms_processamento.domain.model.Agendamento;
 import br.com.sus.ms_processamento.domain.model.StatusAgendamentoEnum;
+import br.com.sus.ms_processamento.domain.model.StatusAgendamentoPacienteEnum;
 import br.com.sus.ms_processamento.infrastructure.api.event.AntecipacaoConsultaEvent;
 import br.com.sus.ms_processamento.infrastructure.api.producer.AntecipacaoConsultaProducer;
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
@@ -98,13 +99,13 @@ public class AgendamentoGateway implements IAgendamentoGateway {
                 if (existente.isPresent()) {
                     ap = existente.get();
                     ap.setToken(novoToken);
-                    ap.setStatus(StatusAgendamentoEnum.ANTECIPAR.name());
+                    ap.setStatus(StatusAgendamentoPacienteEnum.AGUARDANDO_ANTECIPACAO.name());
                 } else {
                     ap = new AgendamentoPacienteEntity();
-                    ap.setAgendamento(candidato);
+                    ap.setAgendamento(agendamentoEntity);
                     ap.setPaciente(candidato.getPaciente());
                     ap.setDataRegistro(LocalDateTime.now());
-                    ap.setStatus(StatusAgendamentoEnum.ANTECIPAR.name());
+                    ap.setStatus(StatusAgendamentoPacienteEnum.AGUARDANDO_ANTECIPACAO.name());
                     ap.setToken(novoToken);
                 }
 

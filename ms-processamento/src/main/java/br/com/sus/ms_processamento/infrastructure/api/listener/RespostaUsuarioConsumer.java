@@ -7,6 +7,8 @@ import br.com.sus.ms_processamento.infrastructure.persistence.repository.Agendam
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoPacienteEntity;
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
 import br.com.sus.ms_processamento.domain.model.StatusAgendamentoEnum;
+import br.com.sus.ms_processamento.domain.model.StatusAgendamentoPacienteEnum;
+import br.com.sus.ms_processamento.domain.model.RespostaPacienteEnum;
 import java.util.Optional;
 
 import br.com.sus.ms_processamento.infrastructure.presenters.AgendamentoEntityPresenters;
@@ -54,11 +56,11 @@ public class RespostaUsuarioConsumer {
         String resposta = event.resposta();
 
         try {
-            if ("CONFIRMAR".equalsIgnoreCase(resposta) ) {
+            if (RespostaPacienteEnum.CONFIRMAR.name().equalsIgnoreCase(resposta) ) {
                 agendamento.setStatus(StatusAgendamentoEnum.CONFIRMADO_PACIENTE);
-                ap.setStatus(StatusAgendamentoEnum.CONFIRMADO_PACIENTE.toString());
-            } else if ("CANCELAR".equalsIgnoreCase(resposta) || "NAO".equalsIgnoreCase(resposta)) {
-                ap.setStatus(StatusAgendamentoEnum.CANCELADO.toString());
+                ap.setStatus(StatusAgendamentoPacienteEnum.CONFIRMADO_PACIENTE.toString());
+            } else if (RespostaPacienteEnum.CANCELAR.name().equalsIgnoreCase(resposta) || "NAO".equalsIgnoreCase(resposta)) {
+                ap.setStatus(StatusAgendamentoPacienteEnum.CANCELADO.toString());
                 agendamento.setStatus(StatusAgendamentoEnum.CANCELADO);
             } else {
                 log.info("[RespostaUsuario] Resposta desconhecida='{}'. Nenhuma ação aplicada.", resposta);
