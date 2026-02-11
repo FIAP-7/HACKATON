@@ -40,9 +40,9 @@ public class IngestaoServiceImpl implements IngestaoService {
                 new AgendamentoEvent.Consulta(
                         command.consulta().dataHora(),
                         command.consulta().medico(),
+                        command.consulta().especialidade(),
                         command.consulta().endereco(),
                         command.consulta().localAtendimento(),
-                        command.consulta().especialidade(),
                         command.consulta().unidadeId()
                 ),
                 LocalDateTime.now()
