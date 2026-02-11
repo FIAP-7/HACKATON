@@ -6,9 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface AgendamentoPacienteJPARepository extends JpaRepository<AgendamentoPacienteEntity, UUID> {
 	Optional<AgendamentoPacienteEntity> findByToken(String token);
 	Optional<AgendamentoPacienteEntity> findByPaciente_CpfAndAgendamento_Id(String pacienteCpf, UUID agendamentoId);
+	List<AgendamentoPacienteEntity> findByAgendamento_Id(UUID agendamentoId);
 }

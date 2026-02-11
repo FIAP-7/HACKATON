@@ -22,7 +22,7 @@ public class AntecipacaoNotificacaoService {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            String urlBase = "http://localhost:8080/v1/notificacoes/antecipar/" + record.tokenUUID();
+            String urlBase = "http://localhost:8080/api/v1/acao/antecipar?token=" + record.tokenUUID();
 
             String dataAgendadaFormatada = DateFormatterUtil.formatarDataBrasileira(record.dataHoraAgendada());
             String dataAntecipacaoFormatada = DateFormatterUtil.formatarDataBrasileira(record.dataHoraConsultaAntecipada());
@@ -60,9 +60,9 @@ public class AntecipacaoNotificacaoService {
                     </div>
                     
                     <div style='text-align: center; margin: 25px 0;'>
-                        <a href='%s?acao=ACEITAR' style='background-color: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>ACEITAR ANTECIPAÇÃO</a>
+                        <a href='%s&acao=ACEITAR' style='background-color: #28a745; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>ACEITAR ANTECIPAÇÃO</a>
                         <p style='margin-top: 15px;'>
-                            <a href='%s?acao=MANTER' style='color: #666; text-decoration: underline; font-size: 14px;'>Manter meu horário atual</a>
+                            <a href='%s&acao=MANTER' style='color: #666; text-decoration: underline; font-size: 14px;'>Manter meu horário atual</a>
                         </p>
                     </div>
                 </div>

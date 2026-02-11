@@ -18,6 +18,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class RabbitMqConfig {
 
     public static final String EXCHANGE_NAME = "sus.direct.exchange";
+
     public static final String QUEUE_AGENDAMENTO = "sus.input.carga-agendamento";
     public static final String ROUTING_AGENDAMENTO = "rota.carga.agendamento";
 
@@ -29,6 +30,9 @@ public class RabbitMqConfig {
 
     public static final String QUEUE_ANTECIPACAO = "sus.processamento.antecipacao-usuario";
     public static final String ROUTING_ANTECIPACAO = "rota.processamento.antecipacao.usuario";
+
+    public static final String QUEUE_ANTECIPACAO_USUARIO = "sus.input.antecipacao-usuario";
+    public static final String ROUTING_ANTECIPACAO_USUARIO = "rota.input.antecipacao.usuario";
 
     @Bean
     public DirectExchange susDirectExchange() {
@@ -71,6 +75,16 @@ public class RabbitMqConfig {
     @Bean
     public Binding respostaUsuarioBinding(Queue respostaUsuarioQueue, DirectExchange susDirectExchange) {
         return BindingBuilder.bind(respostaUsuarioQueue).to(susDirectExchange).with(ROUTING_RESPOSTA_USUARIO);
+    }
+
+    @Bean
+    public Queue antecipacaoUsuarioQueue() {
+        return new Queue(QUEUE_ANTECIPACAO_USUARIO, true);
+    }
+
+    @Bean
+    public Binding antecipacaoUsuarioBinding(Queue respostaUsuarioQueue, DirectExchange susDirectExchange) {
+        return BindingBuilder.bind(respostaUsuarioQueue).to(susDirectExchange).with(ROUTING_ANTECIPACAO_USUARIO);
     }
 
     @Bean

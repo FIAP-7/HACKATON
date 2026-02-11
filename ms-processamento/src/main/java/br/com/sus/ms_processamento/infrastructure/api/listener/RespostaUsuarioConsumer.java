@@ -2,9 +2,7 @@ package br.com.sus.ms_processamento.infrastructure.api.listener;
 
 import br.com.sus.ms_processamento.application.usecase.agendamento.AgendamentoUseCase;
 import br.com.sus.ms_processamento.infrastructure.api.event.EventoRespostaUsuario;
-import br.com.sus.ms_processamento.infrastructure.api.producer.AntecipacaoConsultaProducer;
 import br.com.sus.ms_processamento.infrastructure.config.RabbitMqConfig;
-import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoJPARepository;
 import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoPacienteJPARepository;
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoPacienteEntity;
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
@@ -23,18 +21,12 @@ public class RespostaUsuarioConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(RespostaUsuarioConsumer.class);
 
-    private final AgendamentoJPARepository agendamentoJPARepository;
     private final AgendamentoPacienteJPARepository agendamentoPacienteJPARepository;
-    private final AntecipacaoConsultaProducer antecipacaoConsultaProducer;
     private final AgendamentoUseCase agendamentoUseCase;
     
-    public RespostaUsuarioConsumer(AgendamentoJPARepository agendamentoJPARepository,
-                                   AgendamentoPacienteJPARepository agendamentoPacienteJPARepository,
-                                   AntecipacaoConsultaProducer antecipacaoConsultaProducer,
+    public RespostaUsuarioConsumer(AgendamentoPacienteJPARepository agendamentoPacienteJPARepository,
                                    AgendamentoUseCase agendamentoUseCase) {
-        this.agendamentoJPARepository = agendamentoJPARepository;
         this.agendamentoPacienteJPARepository = agendamentoPacienteJPARepository;
-        this.antecipacaoConsultaProducer = antecipacaoConsultaProducer;
         this.agendamentoUseCase = agendamentoUseCase;
     }
 

@@ -20,24 +20,4 @@ public record AgendamentoInput(UUID id,
                                String unidadeId,
                                StatusAgendamentoEnum status,
                                LocalDateTime dataLimiteConsulta)
-{
-
-    /*
-    public Agendamento toDomain() {
-        return Agendamento.create(id,
-                idExterno,
-                pacienteNome,
-                pacienteTelefone,
-                pacienteEmail,
-                dataHora,
-                medico,
-                especialidade,
-                endereco,
-                localAtendimento,
-                unidadeId,
-                status,
-                dataLimiteConsulta);
-    }
-     */
-
-}
+{}
