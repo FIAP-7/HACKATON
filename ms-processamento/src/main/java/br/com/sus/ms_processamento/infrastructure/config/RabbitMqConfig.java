@@ -34,6 +34,9 @@ public class RabbitMqConfig {
     public static final String QUEUE_ANTECIPACAO_USUARIO = "sus.input.antecipacao-usuario";
     public static final String ROUTING_ANTECIPACAO_USUARIO = "rota.input.antecipacao.usuario";
 
+    public static final String QUEUE_CONFIRMACAO_ANTECIPACAO = "sus.notificacao.confirmacao-antecipacao";
+    public static final String ROUTING_CONFIRMACAO_ANTECIPACAO = "rota.notificacao.confirmacao.antecipacao";
+
     @Bean
     public DirectExchange susDirectExchange() {
         return new DirectExchange(EXCHANGE_NAME, true, false);
@@ -85,6 +88,16 @@ public class RabbitMqConfig {
     @Bean
     public Binding antecipacaoUsuarioBinding(Queue respostaUsuarioQueue, DirectExchange susDirectExchange) {
         return BindingBuilder.bind(respostaUsuarioQueue).to(susDirectExchange).with(ROUTING_ANTECIPACAO_USUARIO);
+    }
+
+    @Bean
+    public Queue confirmacaoAntecipacaoQueue() {
+        return new Queue(QUEUE_CONFIRMACAO_ANTECIPACAO, true);
+    }
+
+    @Bean
+    public Binding confirmacaoAntecipacaoBinding(Queue confirmacaoAntecipacaoQueue, DirectExchange susDirectExchange) {
+        return BindingBuilder.bind(confirmacaoAntecipacaoQueue).to(susDirectExchange).with(ROUTING_CONFIRMACAO_ANTECIPACAO);
     }
 
     @Bean

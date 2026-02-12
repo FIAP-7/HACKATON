@@ -7,6 +7,9 @@ import br.com.sus.ms_processamento.infrastructure.persistence.entity.Agendamento
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
 import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoPacienteJPARepository;
 import br.com.sus.ms_processamento.infrastructure.persistence.repository.AgendamentoJPARepository;
+import br.com.sus.ms_processamento.infrastructure.api.producer.AntecipacaoConsultaProducer;
+import br.com.sus.ms_processamento.infrastructure.api.event.ConfirmacaoAntecipacaoEvent;
+import br.com.sus.ms_processamento.infrastructure.presenters.PacienteEntityPresenters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,11 +26,14 @@ public class AntecipacaoGatewayImpl implements IAntecipacaoGateway {
 
     private final AgendamentoPacienteJPARepository agendamentoPacienteJPARepository;
     private final AgendamentoJPARepository agendamentoJPARepository;
+    private final AntecipacaoConsultaProducer antecipacaoConsultaProducer;
 
     public AntecipacaoGatewayImpl(AgendamentoPacienteJPARepository agendamentoPacienteJPARepository,
-                                  AgendamentoJPARepository agendamentoJPARepository) {
+                                  AgendamentoJPARepository agendamentoJPARepository,
+                                  AntecipacaoConsultaProducer antecipacaoConsultaProducer) {
         this.agendamentoPacienteJPARepository = agendamentoPacienteJPARepository;
         this.agendamentoJPARepository = agendamentoJPARepository;
+        this.antecipacaoConsultaProducer = antecipacaoConsultaProducer;
     }
 
     @Override
@@ -54,6 +60,7 @@ public class AntecipacaoGatewayImpl implements IAntecipacaoGateway {
         marcarAgendamentoAnteriorComoAntecipar(agendamentoPaciente);
         invalidarOutrosTokens(agendamento, agendamentoPaciente);
         finalizarProcessamento(agendamentoPaciente);
+        enviarConfirmacaoAntecipacao(agendamento, agendamentoPaciente);
         
         log.info("[AntecipacaoGateway] Antecipação CONFIRMADA - agendamento id={} status={}", 
                 agendamento.getId(), agendamento.getStatus());
@@ -136,5 +143,20 @@ public class AntecipacaoGatewayImpl implements IAntecipacaoGateway {
         log.info("[AntecipacaoGateway] Finalizado processamento - agendamento id={} status={} (token removido)",
                 agendamentoPaciente.getAgendamento().getId(),
                 agendamentoPaciente.getAgendamento().getStatus());
+    }
+
+    private void enviarConfirmacaoAntecipacao(AgendamentoEntity agendamento, AgendamentoPacienteEntity agendamentoPaciente) {
+        ConfirmacaoAntecipacaoEvent event = ConfirmacaoAntecipacaoEvent.builder()
+                .paciente(PacienteEntityPresenters.toDomain(agendamentoPaciente.getPaciente()))
+                .novaDataHora(agendamento.getDataHora())
+                .especialidade(agendamento.getEspecialidade())
+                .medico(agendamento.getMedico())
+                .localAtendimento(agendamento.getLocalAtendimento())
+                .endereco(agendamento.getEndereco())
+                .build();
+        
+        antecipacaoConsultaProducer.enviarConfirmacaoAntecipacao(event);
+        log.info("[AntecipacaoGateway] Evento de confirmação de antecipação enviado para paciente={}",
+                agendamentoPaciente.getPaciente().getCpf());
     }
 }

@@ -2,6 +2,7 @@ package br.com.sus.ms_processamento.infrastructure.api.producer;
 
 import br.com.sus.ms_processamento.infrastructure.api.event.AntecipacaoConsultaEvent;
 import br.com.sus.ms_processamento.infrastructure.api.event.ConfirmacaoConsultaEvent;
+import br.com.sus.ms_processamento.infrastructure.api.event.ConfirmacaoAntecipacaoEvent;
 import br.com.sus.ms_processamento.infrastructure.config.RabbitMqConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,21 @@ public class AntecipacaoConsultaProducer {
                 event.consultaAntecipada().paciente().email(),
                 event.consultaAntecipada().consulta().localAtendimento(),
                 event.consultaCancelada().consulta().dataHora()
+                );
+    }
+
+    public void enviarConfirmacaoAntecipacao(ConfirmacaoAntecipacaoEvent event) {
+        rabbitTemplate.convertAndSend(
+                RabbitMqConfig.EXCHANGE_NAME,
+                RabbitMqConfig.ROUTING_CONFIRMACAO_ANTECIPACAO,
+                event
+        );
+        log.info("[RabbitMQ] Evento de confirmação de antecipação publicado na exchange={}, routingKey={}, paciente={}, email={}, novaDataHora={}",
+                RabbitMqConfig.EXCHANGE_NAME,
+                RabbitMqConfig.ROUTING_CONFIRMACAO_ANTECIPACAO,
+                event.paciente().nome(),
+                event.paciente().email(),
+                event.novaDataHora()
                 );
     }
 }
