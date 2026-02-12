@@ -42,8 +42,6 @@ services:
       SPRING_RABBITMQ_USERNAME: ${SPRING_RABBITMQ_USERNAME:-guest}
       SPRING_RABBITMQ_PASSWORD: ${SPRING_RABBITMQ_PASSWORD:-guest}
       SUS_SECURITY_API_TOKEN: ${SUS_SECURITY_API_TOKEN:-hackathon-secret}
-      WEBHOOK_BASIC_USER: ${WEBHOOK_BASIC_USER:-twilio}
-      WEBHOOK_BASIC_PASSWORD: ${WEBHOOK_BASIC_PASSWORD:-teste123}
     depends_on:
       rabbitmq:
         condition: service_healthy

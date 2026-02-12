@@ -21,6 +21,24 @@ import java.util.UUID;
 public class DataSeederConfig implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeederConfig.class);
+    private static final int HORAS_AGENDAMENTO = 10;
+    private static final int DIAS_LIMITE_CONSULTA = 3;
+    private static final int HORAS_LIMITE_CONSULTA = 23;
+    private static final int MINUTOS_LIMITE_CONSULTA = 59;
+    private static final int AGENDAMENTOS_PENDENTE_7DIAS = 4;
+    private static final int AGENDAMENTOS_PENDENTE_9DIAS = 5;
+    private static final int AGENDAMENTOS_POR_PERIODO = 3;
+    private static final int QUANTIDADE_AGENDAMENTOS_PSIQUIATRA = 7;
+    private static final int CONTADOR_INICIAL_PSIQUIATRA = 100;
+    private static final int DIAS_INICIAIS_PSIQUIATRA = 9;
+    private static final String[] MEDICOS = {"Dr. Drauzio Varella", "Dra. Sofia Silva", "Dr. Carlos Costa"};
+    private static final String[] ESPECIALIDADES = {"Oncologista", "Cardiologista", "Pediatra"};
+    private static final String MEDICO_PSIQUIATRA = "Dr. João Psiquiatra";
+    private static final String ESPECIALIDADE_PSIQUIATRA = "Psiquiatra";
+    private static final String ENDERECO = "Av. Albert Einstein, 627/701 - Morumbi, São Paulo - SP, 05652-900";
+    private static final String LOCAL_ATENDIMENTO = "Hospital Albert Einstein";
+    private static final String UNIDADE_ID = "UNI-001";
+    private static final String EMAIL_PADRAO = "jh93.dev@gmail.com";
 
     private final AgendamentoJPARepository agendamentoJPARepository;
     private final PacienteJPARepository pacienteJPARepository;
@@ -39,87 +57,165 @@ public class DataSeederConfig implements CommandLineRunner {
         if (agendamentoJPARepository.count() == 0) {
             log.info("[DataSeeder] Iniciando população de dados de teste...");
             
-            List<AgendamentoEntity> agendamentos = Arrays.asList(
-                criarAgendamento("AGD-001", "João Silva", "12345678901", "11999999901", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-002", "Maria Santos", "12345678902", "11999999902", StatusAgendamentoEnum.CONFIRMADO_PACIENTE),
-                criarAgendamento("AGD-003", "Pedro Costa", "12345678903", "11999999903", StatusAgendamentoEnum.CANCELADO),
-                criarAgendamento("AGD-004", "Ana Oliveira", "12345678904", "11999999904", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-005", "Lucas Ferreira", "12345678905", "11999999905", StatusAgendamentoEnum.CONFIRMADO_PACIENTE),
-                criarAgendamento("AGD-006", "Carla Martins", "12345678906", "11999999906", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-007", "Ricardo Souza", "12345678907", "11999999907", StatusAgendamentoEnum.CANCELADO),
-                criarAgendamento("AGD-008", "Beatriz Lima", "12345678908", "11999999908", StatusAgendamentoEnum.CONFIRMADO_PACIENTE),
-                criarAgendamento("AGD-009", "Gabriel Rocha", "12345678909", "11999999909", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-010", "Fernanda Santos", "12345678910", "11999999910", StatusAgendamentoEnum.CANCELADO),
-                criarAgendamento("AGD-011", "Isabela Costa", "12345678911", "11999999911", StatusAgendamentoEnum.CONFIRMADO_PACIENTE),
-                criarAgendamento("AGD-012", "Thiago Alves", "12345678912", "11999999912", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-013", "Caroline Gomes", "12345678913", "11999999913", StatusAgendamentoEnum.CANCELADO),
-                criarAgendamento("AGD-014", "Rodrigo Pereira", "12345678914", "11999999914", StatusAgendamentoEnum.CONFIRMADO_PACIENTE),
-                criarAgendamento("AGD-015", "Paulina Dias", "12345678915", "11999999915", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-016", "Marcos Vieira", "12345678916", "11999999916", StatusAgendamentoEnum.CANCELADO),
-                criarAgendamento("AGD-017", "Larissa Correia", "12345678917", "11999999917", StatusAgendamentoEnum.CONFIRMADO_PACIENTE),
-                criarAgendamento("AGD-018", "Felipe Nascimento", "12345678918", "11999999918", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-019", "Vivian Mendes", "12345678919", "11999999919", StatusAgendamentoEnum.CANCELADO),
-                criarAgendamento("AGD-020", "Sergio Martins", "12345678920", "11999999920", StatusAgendamentoEnum.CONFIRMADO_PACIENTE),
-                criarAgendamento("AGD-021", "Tatiana Silva", "12345678921", "11999999921", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-022", "Ulisses Costa", "12345678922", "11999999922", StatusAgendamentoEnum.CANCELADO),
-                criarAgendamento("AGD-023", "Vanessa Rocha", "12345678923", "11999999923", StatusAgendamentoEnum.CONFIRMADO_PACIENTE),
-                criarAgendamento("AGD-024", "Wagner Gomes", "12345678924", "11999999924", StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO),
-                criarAgendamento("AGD-025", "Xavier Pereira", "12345678925", "11999999925", StatusAgendamentoEnum.CANCELADO)
-            );
-
+            List<AgendamentoEntity> agendamentos = criarAgendamentosPorStatus();
+            agendamentos.addAll(criarAgendamentosPsiquiatraPendente());
+            
             List<AgendamentoEntity> agendamentosSalvos = agendamentoJPARepository.saveAll(agendamentos);
             log.info("[DataSeeder] {} registros de teste inseridos com sucesso!", agendamentosSalvos.size());
-
-           /*
-           for (AgendamentoEntity ag : agendamentosSalvos) {
-                AgendamentoPacienteEntity ap = AgendamentoPacienteEntity.builder()
-                        .paciente(ag.getPaciente())
-                        .agendamento(ag)
-                        .dataRegistro(ag.getDataHora())
-                        .status(ag.getStatus() != null ? ag.getStatus().toString() : StatusAgendamentoEnum.PENDENTE.toString())
-                        .token(UUID.randomUUID().toString())
-                        .build();
-                agendamentoPacienteJPARepository.save(ap);
-            }
-            */
+           
+            criarAgendamentoPacienteParaAguardandoConfirmacao(agendamentosSalvos);
         } else {
             log.info("[DataSeeder] Tabela agendamento já contém dados. Pulando população de testes.");
         }
     }
 
-    private AgendamentoEntity criarAgendamento(String idExterno, String pacienteNome, String cpf, 
-                                               String pacienteTelefone, StatusAgendamentoEnum status) {
-        
-        final String seederEmail = System.getenv("SEEDER_EMAIL") != null && !System.getenv("SEEDER_EMAIL").isBlank()
-            ? System.getenv("SEEDER_EMAIL")
-            : "email.teste@gmail.com";
+    private List<AgendamentoEntity> criarAgendamentosPorStatus() {
+        List<AgendamentoEntity> agendamentos = new java.util.ArrayList<>();
+        StatusAgendamentoEnum[] statuses = {
+                StatusAgendamentoEnum.PENDENTE,
+                StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO,
+                StatusAgendamentoEnum.CONFIRMADO_PACIENTE,
+                StatusAgendamentoEnum.CANCELADO,
+                StatusAgendamentoEnum.ANTECIPAR,
+                StatusAgendamentoEnum.REALOCADO
+        };
 
-        PacienteEntity pacienteSalvo = pacienteJPARepository.findById(cpf)
+        int contador = 1;
+        for (StatusAgendamentoEnum status : statuses) {
+            if (status == StatusAgendamentoEnum.PENDENTE) {
+                contador = adicionarAgendamentosComDias(agendamentos, status, contador, AGENDAMENTOS_PENDENTE_7DIAS, 7);
+                contador = adicionarAgendamentosComDias(agendamentos, status, contador, AGENDAMENTOS_PENDENTE_9DIAS, 9);
+            } else {
+                contador = adicionarAgendamentosComDias(agendamentos, status, contador, AGENDAMENTOS_POR_PERIODO, 0);
+                contador = adicionarAgendamentosComDias(agendamentos, status, contador, AGENDAMENTOS_POR_PERIODO, 5);
+                contador = adicionarAgendamentosComDias(agendamentos, status, contador, AGENDAMENTOS_POR_PERIODO, 7);
+            }
+        }
+
+        return agendamentos;
+    }
+
+    private int adicionarAgendamentosComDias(List<AgendamentoEntity> agendamentos, StatusAgendamentoEnum status,
+                                             int contador, int quantidade, int dias) {
+        for (int i = 0; i < quantidade; i++) {
+            agendamentos.add(criarAgendamento(
+                    "AGD-" + String.format("%03d", contador++),
+                    "Paciente " + contador,
+                    gerarCPF(contador),
+                    "11" + (99000000 + contador),
+                    status,
+                    dias
+            ));
+        }
+        return contador;
+    }
+
+    private List<AgendamentoEntity> criarAgendamentosPsiquiatraPendente() {
+        List<AgendamentoEntity> agendamentos = new java.util.ArrayList<>();
+        int contador = CONTADOR_INICIAL_PSIQUIATRA;
+        
+        for (int i = 0; i < QUANTIDADE_AGENDAMENTOS_PSIQUIATRA; i++) {
+            agendamentos.add(criarAgendamentoPsiquiatra(
+                    "AGD-PSQ-" + String.format("%03d", i + 1),
+                    "Paciente Psiquiatra " + (i + 1),
+                    gerarCPF(contador++),
+                    "11" + (99000000 + contador),
+                    StatusAgendamentoEnum.PENDENTE,
+                    DIAS_INICIAIS_PSIQUIATRA + i
+            ));
+        }
+        
+        return agendamentos;
+    }
+
+    private void criarAgendamentoPacienteParaAguardandoConfirmacao(List<AgendamentoEntity> agendamentos) {
+        agendamentos.stream()
+                .filter(ag -> ag.getStatus() == StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO)
+                .forEach(ag -> {
+                    AgendamentoPacienteEntity ap = AgendamentoPacienteEntity.builder()
+                            .paciente(ag.getPaciente())
+                            .agendamento(ag)
+                            .dataRegistro(LocalDateTime.now())
+                            .status(StatusAgendamentoEnum.AGUARDANDO_CONFIRMACAO.toString())
+                            .token(UUID.randomUUID().toString())
+                            .build();
+                    agendamentoPacienteJPARepository.save(ap);
+                });
+    }
+
+    private String gerarCPF(int numero) {
+        return String.format("%010d1", numero % 10000000000L);
+    }
+
+    private AgendamentoEntity criarAgendamento(String idExterno, String pacienteNome, String cpf, 
+                                               String pacienteTelefone, StatusAgendamentoEnum status, int diasAdicionar) {
+        PacienteEntity paciente = obterOuCriarPaciente(pacienteNome, cpf, pacienteTelefone);
+        int indiceEspecialidade = Math.abs(cpf.hashCode() % ESPECIALIDADES.length);
+        
+        return construirAgendamento(idExterno, paciente, diasAdicionar, status,
+                MEDICOS[indiceEspecialidade], ESPECIALIDADES[indiceEspecialidade]);
+    }
+
+    private AgendamentoEntity criarAgendamentoPsiquiatra(String idExterno, String pacienteNome, String cpf, 
+                                                        String pacienteTelefone, StatusAgendamentoEnum status, int diasAdicionar) {
+        PacienteEntity paciente = obterOuCriarPaciente(pacienteNome, cpf, pacienteTelefone);
+        
+        return construirAgendamento(idExterno, paciente, diasAdicionar, status,
+                MEDICO_PSIQUIATRA, ESPECIALIDADE_PSIQUIATRA);
+    }
+
+    private PacienteEntity obterOuCriarPaciente(String nome, String cpf, String telefone) {
+        return pacienteJPARepository.findById(cpf)
             .orElseGet(() -> {
                 PacienteEntity novoPaciente = PacienteEntity.builder()
-                    .nome(pacienteNome)
+                    .nome(nome)
                     .cpf(cpf)
-                    .telefone(pacienteTelefone)
-                    .email(seederEmail)
+                    .telefone(telefone)
+                    .email(obterEmailSeeder())
                     .build();
                 return pacienteJPARepository.save(novoPaciente);
             });
-        
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dataHora = now.plusDays(5).withHour(10).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime dataLimite = now.plusDays(3).withHour(23).withMinute(59).withSecond(59).withNano(0);
+    }
+
+    private String obterEmailSeeder() {
+        String emailAmbiente = System.getenv("SEEDER_EMAIL");
+        return (emailAmbiente != null && !emailAmbiente.isBlank()) ? emailAmbiente : EMAIL_PADRAO;
+    }
+
+    private AgendamentoEntity construirAgendamento(String idExterno, PacienteEntity paciente, int diasAdicionar,
+                                                   StatusAgendamentoEnum status, String medico, String especialidade) {
+        LocalDateTime dataHora = calcularDataHora(diasAdicionar);
+        LocalDateTime dataLimite = calcularDataLimite(dataHora);
 
         return AgendamentoEntity.builder()
             .idExterno(idExterno)
-            .paciente(pacienteSalvo)
+            .paciente(paciente)
             .dataHora(dataHora)
-            .medico("Dr. Drauzio Varella")
-            .especialidade("Oncologista")
-            .endereco("Av. Albert Einstein, 627/701 - Morumbi, São Paulo - SP, 05652-900")
-            .localAtendimento("Hospital Albert Einstein")
-            .unidadeId("UNI-001")
+            .medico(medico)
+            .especialidade(especialidade)
+            .endereco(ENDERECO)
+            .localAtendimento(LOCAL_ATENDIMENTO)
+            .unidadeId(UNIDADE_ID)
             .status(status)
             .dataLimiteConsulta(dataLimite)
             .build();
+    }
+
+    private LocalDateTime calcularDataHora(int diasAdicionar) {
+        return LocalDateTime.now()
+            .plusDays(diasAdicionar)
+            .withHour(HORAS_AGENDAMENTO)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0);
+    }
+
+    private LocalDateTime calcularDataLimite(LocalDateTime dataHora) {
+        return dataHora
+            .plusDays(DIAS_LIMITE_CONSULTA)
+            .withHour(HORAS_LIMITE_CONSULTA)
+            .withMinute(MINUTOS_LIMITE_CONSULTA)
+            .withSecond(59)
+            .withNano(0);
     }
 }

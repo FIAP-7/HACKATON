@@ -3,6 +3,8 @@ package br.com.sus.ms_processamento.infrastructure.persistence.repository;
 import br.com.sus.ms_processamento.domain.model.StatusAgendamentoEnum;
 import br.com.sus.ms_processamento.infrastructure.persistence.entity.AgendamentoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,4 +26,19 @@ public interface AgendamentoJPARepository extends JpaRepository<AgendamentoEntit
 		    String especialidade,
 		    UUID idNot);
 
-}
+    List<AgendamentoEntity> findByStatusAndDataHoraBetween(StatusAgendamentoEnum statusAgendamentoEnum, LocalDateTime start, LocalDateTime end);
+
+	List<AgendamentoEntity> findByStatus(StatusAgendamentoEnum status);
+
+	@Query("SELECT a FROM AgendamentoEntity a WHERE a.status IN :status AND a.especialidade = :especialidade AND a.unidadeId = :unidadeId AND a.dataHora > :dataHora ORDER BY a.dataHora ASC LIMIT 5")
+	List<AgendamentoEntity> findTop3ByMultipleStatusAndEspecialidadeAndUnidadeIdAndDataHoraAfter(
+			@Param("status") List<StatusAgendamentoEnum> status,
+			@Param("especialidade") String especialidade,
+			@Param("unidadeId") String unidadeId,
+			@Param("dataHora") LocalDateTime dataHora);
+	@Query("SELECT a FROM AgendamentoEntity a WHERE a.status IN :status AND a.especialidade = :especialidade AND a.unidadeId = :unidadeId AND a.dataHora > :dataHora ORDER BY a.dataHora ASC LIMIT 15")
+	List<AgendamentoEntity> findTop15ByMultipleStatusAndEspecialidadeAndUnidadeIdAndDataHoraAfter(
+			@Param("status") List<StatusAgendamentoEnum> status,
+			@Param("especialidade") String especialidade,
+			@Param("unidadeId") String unidadeId,
+			@Param("dataHora") LocalDateTime dataHora);}

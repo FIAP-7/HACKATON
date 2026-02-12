@@ -7,5 +7,6 @@ public enum StatusAgendamentoEnum {
     CONFIRMADO_AUTOMATICO,
     CANCELADO,
     ANTECIPAR,
-    REALOCADO
+    REALOCADO,
+    AGUARDANDO_ANTECIPACAO
 }

@@ -42,7 +42,7 @@ public class AntecipacaoNotificacaoService {
             String htmlContent = templateRenderer.render("templates/antecipacao.html", vars);
 
             helper.setTo(record.emailPacienteAntecipacao());
-            helper.setSubject("Oportunidade: Antecipe sua consulta de " + record.especialidadeAgendada());
+            helper.setSubject("Oportunidade: Antecipe sua consulta de " + record.especialidadeAgendada() + " - " + record.nomePacienteAntecipacao());
             helper.setText(htmlContent, true);
 
             mailSender.send(message);

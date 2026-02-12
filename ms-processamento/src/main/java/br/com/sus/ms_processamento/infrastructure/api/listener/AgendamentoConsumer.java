@@ -26,28 +26,20 @@ public class AgendamentoConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(AgendamentoConsumer.class);
 
-        private final AgendamentoJPARepository agendamentoRepository;
-        private final PacienteJPARepository pacienteRepository;
-        private final AgendamentoPacienteJPARepository agendamentoPacienteRepository;
-        private final ConfirmacaoConsultaProducer confirmacaoProducer;
+    private final PacienteJPARepository pacienteRepository;
     private final AgendamentoUseCase agendamentoUseCase;
+    private final AgendamentoJPARepository agendamentoJPARepository;
 
-    public AgendamentoConsumer(AgendamentoJPARepository agendamentoRepository,
-                                   PacienteJPARepository pacienteRepository,
-                                   AgendamentoPacienteJPARepository agendamentoPacienteRepository,
-                                   ConfirmacaoConsultaProducer confirmacaoProducer, AgendamentoUseCase agendamentoUseCase) {
-                this.agendamentoRepository = agendamentoRepository;
+    public AgendamentoConsumer(PacienteJPARepository pacienteRepository, AgendamentoJPARepository agendamentoJPARepository ,AgendamentoUseCase agendamentoUseCase) {
                 this.pacienteRepository = pacienteRepository;
-                this.agendamentoPacienteRepository = agendamentoPacienteRepository;
-                this.confirmacaoProducer = confirmacaoProducer;
         this.agendamentoUseCase = agendamentoUseCase;
+        this.agendamentoJPARepository = agendamentoJPARepository;
     }
 
     @RabbitListener(queues = RabbitMqConfig.QUEUE_AGENDAMENTO)
     public void processarAgendamento(AgendamentoEvent event) {
         try {
             log.info("[RabbitMQ] Agendamento recebido na fila. idExterno={}", event.toString());
-            String tokenUUID = UUID.randomUUID().toString();
             
             PacienteEntity pacienteEntity = pacienteRepository.findById(event.paciente().cpf())
                     .orElseGet(() -> {
@@ -59,7 +51,7 @@ public class AgendamentoConsumer {
                                 .build();
                         return pacienteRepository.save(novoPaciente);
                     });
-            
+
             AgendamentoEntity agendamentoEntity = AgendamentoEntity.builder()
                     .idExterno(event.idExterno())
                     .paciente(pacienteEntity)
@@ -73,24 +65,8 @@ public class AgendamentoConsumer {
                     .dataLimiteConsulta(event.consulta().dataHora())
                     .build();
 
-            AgendamentoEntity agendamentoSalvo = agendamentoRepository.save(agendamentoEntity);
+            AgendamentoEntity agendamentoSalvo = agendamentoJPARepository.save(agendamentoEntity);
             log.info("[PostgreSQL] Agendamento salvo com sucesso. dado={}",  agendamentoSalvo.toString());
-
-            AgendamentoPacienteEntity agendamentoPaciente = AgendamentoPacienteEntity.builder()
-                    .paciente(pacienteEntity)
-                    .agendamento(agendamentoSalvo)
-                    .dataRegistro(LocalDateTime.now())
-                    .status(StatusAgendamentoEnum.PENDENTE.toString())
-                    .token(tokenUUID)
-                    .build();
-            agendamentoPacienteRepository.save(agendamentoPaciente);
-            log.info("[PostgreSQL] Registro agendamento_paciente salvo com sucesso.");
-
-            ConfirmacaoConsultaEvent confirmacaoEvent = ConfirmacaoConsultaEvent.from(event, tokenUUID);
-
-            confirmacaoProducer.enviarConfirmacao(confirmacaoEvent);
-            log.info("[RabbitMQ] Mensagem de confirmação enviada. idExterno={}, tokenUUID={}", 
-                    event.idExterno(), tokenUUID);
 
             AgendamentoRequest request = new AgendamentoRequest(
                     agendamentoSalvo.getId(),
@@ -115,10 +91,6 @@ public class AgendamentoConsumer {
                     event.consulta().dataHora());
 
             agendamentoUseCase.execute(request.toInput());
-
-            log.info("[RabbitMQ] Agendamento processado com sucesso. idExterno={}, tokenUUID={}", 
-                    event.idExterno(), tokenUUID);
-
         } catch (Exception e) {
             log.error("[RabbitMQ] Erro ao processar agendamento. idExterno={}", event.idExterno(), e);
             throw new RuntimeException("Erro ao processar agendamento", e);
