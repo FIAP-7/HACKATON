@@ -38,7 +38,7 @@ public class DataSeederConfig implements CommandLineRunner {
     private static final String ENDERECO = "Av. Albert Einstein, 627/701 - Morumbi, São Paulo - SP, 05652-900";
     private static final String LOCAL_ATENDIMENTO = "Hospital Albert Einstein";
     private static final String UNIDADE_ID = "UNI-001";
-    private static final String EMAIL_PADRAO = "jh93.dev@gmail.com";
+    private static final String EMAIL_PADRAO = "teste.teste@gmail.com";
 
     private final AgendamentoJPARepository agendamentoJPARepository;
     private final PacienteJPARepository pacienteJPARepository;
