@@ -4,4 +4,5 @@ import br.com.sus.ingestao.core.event.EventoRespostaUsuario;
 
 public interface RespostaPublisherPort {
     void publicar(EventoRespostaUsuario event);
+    void publicarAntecipacao(EventoRespostaUsuario event);
 }

@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: ms-notificacao
+  threads:
+    virtual:
+      enabled: true
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: gestaocapacidadesus@gmail.com
+    password: lstcgztylqvjwzdm
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+logging:
+  level:
+    root: INFO
+    br.com.sus: DEBUG
+    org.springframework.amqp: INFO
+
+server:
+  port: 8082

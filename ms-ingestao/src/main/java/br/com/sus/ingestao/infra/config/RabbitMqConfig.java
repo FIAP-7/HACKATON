@@ -21,6 +21,9 @@ public class RabbitMqConfig {
     public static final String QUEUE_RESPOSTA_USUARIO = "sus.input.resposta-usuario";
     public static final String ROUTING_RESPOSTA_USUARIO = "rota.resposta.usuario";
 
+    public static final String QUEUE_ANTECIPACAO_USUARIO = "sus.input.antecipacao-usuario";
+    public static final String ROUTING_ANTECIPACAO_USUARIO = "rota.input.antecipacao.usuario";
+
     @Bean
     public DirectExchange susDirectExchange() {
         return new DirectExchange(EXCHANGE_NAME, true, false);
@@ -45,6 +48,17 @@ public class RabbitMqConfig {
     public Binding respostaUsuarioBinding(Queue respostaUsuarioQueue, DirectExchange susDirectExchange) {
         return BindingBuilder.bind(respostaUsuarioQueue).to(susDirectExchange).with(ROUTING_RESPOSTA_USUARIO);
     }
+
+    @Bean
+    public Queue antecipacaoUsuarioQueue() {
+        return new Queue(QUEUE_ANTECIPACAO_USUARIO, true);
+    }
+
+    @Bean
+    public Binding antecipacaoUsuarioBinding(Queue antecipacaoUsuarioQueue, DirectExchange susDirectExchange) {
+        return BindingBuilder.bind(antecipacaoUsuarioQueue).to(susDirectExchange).with(ROUTING_ANTECIPACAO_USUARIO);
+    }
+
 
     @Bean
     public MessageConverter jackson2JsonMessageConverter() {

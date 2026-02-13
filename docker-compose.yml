@@ -4,14 +4,29 @@ services:
     image: rabbitmq:3-management
     container_name: sus-rabbitmq
     ports:
-      - "5672:5672"   # AMQP
-      - "15672:15672" # Management UI
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: ${SPRING_RABBITMQ_USERNAME:-guest}
       RABBITMQ_DEFAULT_PASS: ${SPRING_RABBITMQ_PASSWORD:-guest}
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+  db-postgre:
+    image: postgres:15
+    container_name: sus-db-postgre
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=teste
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=batata@
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
       timeout: 5s
       retries: 5
     restart: unless-stopped
@@ -27,8 +42,6 @@ services:
       SPRING_RABBITMQ_USERNAME: ${SPRING_RABBITMQ_USERNAME:-guest}
       SPRING_RABBITMQ_PASSWORD: ${SPRING_RABBITMQ_PASSWORD:-guest}
       SUS_SECURITY_API_TOKEN: ${SUS_SECURITY_API_TOKEN:-hackathon-secret}
-      WEBHOOK_BASIC_USER: ${WEBHOOK_BASIC_USER:-twilio}
-      WEBHOOK_BASIC_PASSWORD: ${WEBHOOK_BASIC_PASSWORD:-teste123}
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -37,4 +50,48 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
+
+  ms-processamento:
+    build:
+      context: ./ms-processamento
+    container_name: ms-processamento
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_APPLICATION_NAME=ms-processamento
+      - SPRING_THREADS_VIRTUAL_ENABLED=true
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=${SPRING_RABBITMQ_USERNAME:-guest}
+      - SPRING_RABBITMQ_PASSWORD=${SPRING_RABBITMQ_PASSWORD:-guest}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-postgre:5432/teste
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=batata@
+      - SERVER_PORT=8081
+      - SEEDER_EMAIL=${SEEDER_EMAIL:-seu.email@gmail.com}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db-postgre:
+        condition: service_healthy
+    restart: unless-stopped
+
+  ms-notificacao:
+    build:
+      context: ./ms-notificacao
+    container_name: ms-notificacao
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=${SPRING_RABBITMQ_USERNAME:-guest}
+      - SPRING_RABBITMQ_PASSWORD=${SPRING_RABBITMQ_PASSWORD:-guest}
+      - SPRING_MAIL_USERNAME=gestaocapacidadesus@gmail.com
+      - SPRING_MAIL_PASSWORD=lstcgztylqvjwzdm
+      - SERVER_PORT=8082
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped

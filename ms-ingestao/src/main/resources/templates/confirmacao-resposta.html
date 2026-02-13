@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resposta Registrada</title>
+    <style>
+      body{margin:0;background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);font-family:Arial,Helvetica,sans-serif;color:#1b1f24;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+      .wrap{max-width:600px;margin:0 auto;padding:20px;}
+      .card{background:#ffffff;border-radius:12px;padding:40px 32px;box-shadow:0 12px 40px rgba(0,0,0,.15);}
+      .logo{height:70px;display:block;margin:0 auto 24px;text-align:center;}
+      .logo img{height:100%;}
+      h1{font-size:28px;margin:0 0 16px;text-align:center;color:#2d3748;font-weight:bold;}
+      .subtitle{font-size:16px;color:#667eea;text-align:center;margin:0 0 28px;font-weight:600;}
+      .message{font-size:16px;line-height:1.7;margin:0 0 24px;text-align:center;color:#4a5568;}
+      .highlight{color:#667eea;font-weight:600;}
+      .gratitude-box{background:#f7fafc;border-left:4px solid #667eea;padding:20px;border-radius:8px;margin:28px 0;}
+      .gratitude-box p{margin:0;font-size:15px;line-height:1.7;color:#4a5568;}
+      .badge{display:inline-block;background:#667eea;color:#fff;padding:8px 14px;border-radius:999px;font-size:13px;letter-spacing:.5px;font-weight:600;margin:0 4px;}
+      .footer{font-size:13px;color:#a0aec0;text-align:center;margin-top:32px;padding-top:20px;border-top:1px solid #e2e8f0;}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="logo">
+          <img src="/images/sus-logo-fit.png" alt="SUS Ágil" title="Sistema Único de Saúde">
+        </div>
+        
+        <h1>✓ Resposta Registrada</h1>
+        <p class="subtitle">O seu agendamento foi <span class="badge" th:text="${acao}">confirmado</span></p>
+        
+        <div class="message">
+          <p>Agradecemos imensamente a sua resposta! Ela é fundamental para podermos oferecer um atendimento ainda mais eficiente e ágil a todos os pacientes que dependem do SUS.</p>
+        </div>
+        
+        <div class="gratitude-box">
+          <p><strong>Você está fazendo diferença:</strong> Cada resposta que você nos envia nos ajuda a otimizar os nossos recursos, liberar vagas para quem mais precisa e garantir que o sistema de saúde pública funcione melhor para toda a comunidade. A sua colaboração é essencial para podermos cuidar da saúde do Brasil e apoiar o próximo.</p>
+        </div>
+
+        <div class="message">
+          <p>Muito obrigado por estar conosco nessa jornada! <span class="highlight">A sua resposta nos ajuda a oferecer atendimento mais ágil e eficiente para todos</span>. Estamos comprometidos em cuidar da sua saúde e contribuir para um SUS melhor. 💙</p>
+        </div>
+        
+        <div class="footer">
+          <p>SUS Ágil - Sistema Único de Saúde<br>Cuidando da sua saúde e do bem do país</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

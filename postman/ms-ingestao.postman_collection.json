@@ -56,7 +56,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"idExterno\": \"REQ-002\",\n  \"paciente\": {\n    \"nome\": \"Joao Souza\",\n    \"telefone\": \"+551188887777\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-12-26T09:30:00\",\n    \"medico\": \"Dra. Clara\",\n    \"especialidade\": \"ORTOPEDIA\",\n    \"unidadeId\": \"UBS-CENTRO\"\n  }\n}"
+              "raw": "{\n  \"idExterno\": \"REQ-002\",\n  \"paciente\": {\n    \"nome\": \"Joao Souza\",\n    \"telefone\": \"+551188887777\",\n  \"email\": \"jh93.dev@gmail.com\"\n},\n  \"consulta\": {\n    \"dataHora\": \"2026-12-26T09:30:00\",\n    \"medico\": \"Dra. Clara\",\n    \"especialidade\": \"ORTOPEDIA\",\n    \"endereco\": \"Av. Rosa Cruz n.275 - Santos/SP\",\n    \"localAtendimento\": \"Hospital Ana Costa\",\n   \"unidadeId\": \"UBS-CENTRO\"\n  }\n}"
             }
           },
           "response": [],

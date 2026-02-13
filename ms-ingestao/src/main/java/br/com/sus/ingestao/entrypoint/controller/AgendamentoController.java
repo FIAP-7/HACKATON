@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Integração", description = "Endpoints para ingestão de agendamentos vindos do sistema legado")
 public class AgendamentoController {
 
+    private static final Logger log = LoggerFactory.getLogger(AgendamentoController.class);
     private final IngestaoService ingestaoService;
 
     public AgendamentoController(IngestaoService ingestaoService) {
@@ -49,15 +52,18 @@ public class AgendamentoController {
             @org.springframework.web.bind.annotation.RequestBody AgendamentoRequest request) {
         AgendamentoCommand command = new AgendamentoCommand(
                 request.idExterno(),
-                new AgendamentoCommand.Paciente(request.paciente().nome(), request.paciente().telefone()),
+                new AgendamentoCommand.Paciente(request.paciente().nome(), request.paciente().cpf(), request.paciente().telefone(), request.paciente().email()),
                 new AgendamentoCommand.Consulta(
                         request.consulta().dataHora(),
                         request.consulta().medico(),
                         request.consulta().especialidade(),
+                        request.consulta().endereco(),
+                        request.consulta().localAtendimento(),
                         request.consulta().unidadeId()
                 )
         );
         ingestaoService.processarAgendamento(command);
+        log.info("enviado para fila: " + command.toString());
         return ResponseEntity.accepted().build();
     }
 }

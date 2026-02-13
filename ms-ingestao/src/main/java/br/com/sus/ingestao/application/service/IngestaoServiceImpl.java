@@ -31,18 +31,18 @@ public class IngestaoServiceImpl implements IngestaoService {
 
     @Override
     public void processarAgendamento(AgendamentoCommand command) {
-        // Log recebimento conforme US-01
         log.info("[Ingestao] Recebido com sucesso - idExterno={}, paciente={}, consultaDataHora={}",
                 command.idExterno(), command.paciente().nome(), command.consulta().dataHora());
 
-        // Monta evento com timestamp de ingestão e publica (US-02)
         AgendamentoEvent event = new AgendamentoEvent(
                 command.idExterno(),
-                new AgendamentoEvent.Paciente(command.paciente().nome(), command.paciente().telefone()),
+                new AgendamentoEvent.Paciente(command.paciente().nome(), command.paciente().cpf(), command.paciente().telefone(), command.paciente().email()),
                 new AgendamentoEvent.Consulta(
                         command.consulta().dataHora(),
                         command.consulta().medico(),
                         command.consulta().especialidade(),
+                        command.consulta().endereco(),
+                        command.consulta().localAtendimento(),
                         command.consulta().unidadeId()
                 ),
                 LocalDateTime.now()
@@ -57,4 +57,12 @@ public class IngestaoServiceImpl implements IngestaoService {
         respostaPublisher.publicar(evt);
         log.info("[AcaoEmail] Resposta publicada - token={}, acao={}", token, acao);
     }
+
+    @Override
+    public void processarAntecipacaoEmail(String token, String acao) {
+        EventoRespostaUsuario evt = new EventoRespostaUsuario(token, acao, EventoRespostaUsuario.CanalNotificacao.EMAIL, LocalDateTime.now());
+        respostaPublisher.publicarAntecipacao(evt);
+        log.info("[AcaoEmail] Resposta publicada - token={}, acao={}", token, acao);
+    }
+
 }

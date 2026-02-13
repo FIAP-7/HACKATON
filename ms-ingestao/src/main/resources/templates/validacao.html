@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Antecipação Confirmada</title>
+    <style>
+      body{margin:0;background: linear-gradient(135deg, #28a745 0%, #20c997 100%);font-family:Arial,Helvetica,sans-serif;color:#1b1f24;min-height:100vh;display:flex;align-items:center;justify-content:center;}
+      .wrap{max-width:600px;margin:0 auto;padding:20px;}
+      .card{background:#ffffff;border-radius:12px;padding:40px 32px;box-shadow:0 12px 40px rgba(0,0,0,.15);}
+      .logo{height:70px;display:block;margin:0 auto 24px;text-align:center;}
+      .logo img{height:100%;}
+      .success-icon{font-size:56px;text-align:center;margin:0 0 20px;}
+      h1{font-size:28px;margin:0 0 16px;text-align:center;color:#2d3748;font-weight:bold;}
+      .subtitle{font-size:16px;color:#28a745;text-align:center;margin:0 0 28px;font-weight:600;}
+      .message{font-size:16px;line-height:1.7;margin:0 0 24px;text-align:center;color:#4a5568;}
+      .highlight{color:#28a745;font-weight:600;}
+      .info-box{background:#f0f9f4;border-left:4px solid #28a745;padding:20px;border-radius:8px;margin:28px 0;}
+      .info-box p{margin:0;font-size:15px;line-height:1.7;color:#4a5568;}
+      .status-badge{display:inline-block;background:#28a745;color:#fff;padding:8px 14px;border-radius:999px;font-size:13px;letter-spacing:.5px;font-weight:600;margin:0 4px;}
+      .action-box{background:#fef5e7;border-left:4px solid #f39c12;padding:20px;border-radius:8px;margin:28px 0;}
+      .action-box p{margin:0;font-size:15px;line-height:1.7;color:#4a5568;}
+      .footer{font-size:13px;color:#a0aec0;text-align:center;margin-top:32px;padding-top:20px;border-top:1px solid #e2e8f0;}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="logo">
+          <img src="/images/sus-logo-fit.png" alt="SUS Ágil" title="Sistema Único de Saúde">
+        </div>
+
+        <h1>✓ A sua Resposta foi Registrada!</h1>
+        <p class="subtitle">Obrigado por participar da <span class="status-badge">antecipação</span></p>
+        
+        <div class="message">
+          <p>Recebemos a sua resposta sobre a oportunidade de antecipar a sua consulta. Agradecemos imensamente por sua colaboração!</p>
+        </div>
+        
+        <div class="info-box">
+          <p><strong>Próximos passos:</strong> A sua resposta será processada. Se a sua antecipação for confirmada, você receberá um e-mail especial com a nova data, hora e local de atendimento. Se não for possível confirmar, <span class="highlight">seu agendamento original permanece 100% válido</span> e você será atendido no horário já estabelecido.</p>
+        </div>
+        
+        <div class="action-box">
+          <p><strong>💡 Saiba como funciona:</strong> Oferecemos antecipações a vários pacientes para garantir que a vaga seja aproveitada por alguém que realmente possa ser atendido. Sua resposta nos ajuda a identificar quem pode participar desta oportunidade, mantendo a saúde e a eficiência do nosso atendimento.</p>
+        </div>
+        
+        <div class="message">
+          <p>Muito obrigado por estar conosco nessa jornada! <span class="highlight">A sua resposta nos ajuda a oferecer atendimento mais ágil e eficiente para todos</span>. Estamos comprometidos em cuidar da sua saúde e contribuir para um SUS melhor. 💙</p>
+        </div>
+
+        <div class="footer">
+          <p>SUS Ágil - Sistema Único de Saúde<br>Cuidando da sua saúde e do bem do país</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
