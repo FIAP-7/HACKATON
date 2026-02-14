@@ -27,7 +27,7 @@ public class ConfirmacaoSchedulerService {
         this.agendamentoGateway = agendamentoGateway;
     }
 
-   @Scheduled(fixedDelay = 240000)
+   @Scheduled(fixedDelay = 260000)
     public void enviarConfirmacoesPreventivas() {
        enviarConfirmacaoPendentes7Dias();
 
