@@ -1,9 +1,11 @@
 {
   "info": {
-    "_postman_id": "3c1fe7b3-0af4-4c1a-8b63-col-MSIngestao",
+    "_postman_id": "4f6a763b-ae1a-49ca-af9c-9df439bbdff3",
     "name": "MS Ingestao - Test Suite",
+    "description": "Coleção para testar os cenários do microsserviço ms-ingestao (API Key + Endpoints públicos).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Coleção para testar os cenários do microsserviço ms-ingestao (API Key + Endpoints públicos)."
+    "_exporter_id": "44932961",
+    "_collection_link": "https://go.postman.co/collection/44932961-4f6a763b-ae1a-49ca-af9c-9df439bbdff3?source=collection_link"
   },
   "item": [
     {
@@ -11,23 +13,6 @@
       "item": [
         {
           "name": "POST Agendamentos - Sucesso (202)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "X-API-KEY", "value": "{{apiKey}}" },
-              { "key": "Content-Type", "value": "{{contentType}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "integracao", "agendamentos"]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"idExterno\": \"REQ-001\",\n  \"paciente\": {\n    \"nome\": \"Maria Silva\",\n    \"telefone\": \"+5511999998888\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-12-25T14:00:00\",\n    \"medico\": \"Dr. House\",\n    \"especialidade\": \"CARDIOLOGIA\",\n    \"unidadeId\": \"UBS-VILA-MARIANA\"\n  }\n}"
-            }
-          },
-          "response": [],
           "event": [
             {
               "listen": "test",
@@ -37,29 +22,45 @@
                   "  pm.response.to.have.status(202);",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "{{contentType}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idExterno\": \"SUS-100200\",\n  \"paciente\": {\n    \"nome\": \"Maria Silva\",\n    \"telefone\": \"+5511999998888\",\n    \"cpf\":\"45686775345\",\n    \"email\":\"seu-email@seu-email.com\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-02-16T14:00:00\",\n    \"medico\": \"Dr. House\",\n    \"especialidade\": \"Psiquiatra\",\n    \"unidadeId\": \"UBS-VILA-MARIANA\",\n    \"localAtendimento\": \"UBS Vila Mariana\",\n    \"endereco\": \"Avenida Vila Mariana\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracao",
+                "agendamentos"
+              ]
+            }
+          },
+          "response": []
         },
         {
           "name": "POST Agendamentos - Sem API Key (401)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "{{contentType}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "integracao", "agendamentos"]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"idExterno\": \"REQ-002\",\n  \"paciente\": {\n    \"nome\": \"Joao Souza\",\n    \"telefone\": \"+551188887777\",\n  \"email\": \"jh93.dev@gmail.com\"\n},\n  \"consulta\": {\n    \"dataHora\": \"2026-12-26T09:30:00\",\n    \"medico\": \"Dra. Clara\",\n    \"especialidade\": \"ORTOPEDIA\",\n    \"endereco\": \"Av. Rosa Cruz n.275 - Santos/SP\",\n    \"localAtendimento\": \"Hospital Ana Costa\",\n   \"unidadeId\": \"UBS-CENTRO\"\n  }\n}"
-            }
-          },
-          "response": [],
           "event": [
             {
               "listen": "test",
@@ -69,30 +70,41 @@
                   "  pm.response.to.have.status(401);",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "{{contentType}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idExterno\": \"SUS-100200\",\n  \"paciente\": {\n    \"nome\": \"Maria Silva\",\n    \"telefone\": \"+5511999998888\",\n    \"cpf\":\"45686775345\",\n    \"email\":\"seu-email@seu-email.com\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-02-16T14:00:00\",\n    \"medico\": \"Dr. House\",\n    \"especialidade\": \"Psiquiatra\",\n    \"unidadeId\": \"UBS-VILA-MARIANA\",\n    \"localAtendimento\": \"UBS Vila Mariana\",\n    \"endereco\": \"Avenida Vila Mariana\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracao",
+                "agendamentos"
+              ]
+            }
+          },
+          "response": []
         },
         {
           "name": "POST Agendamentos - API Key Errada (401)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "X-API-KEY", "value": "{{wrongApiKey}}" },
-              { "key": "Content-Type", "value": "{{contentType}}" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "integracao", "agendamentos"]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"idExterno\": \"REQ-003\",\n  \"paciente\": {\n    \"nome\": \"Ana Paula\",\n    \"telefone\": \"+551177776666\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-12-27T11:15:00\",\n    \"medico\": \"Dr. Marcos\",\n    \"especialidade\": \"DERMATOLOGIA\",\n    \"unidadeId\": \"UBS-JARDINS\"\n  }\n}"
-            }
-          },
-          "response": [],
           "event": [
             {
               "listen": "test",
@@ -102,30 +114,45 @@
                   "  pm.response.to.have.status(401);",
                   "});"
                 ],
-                "type": "text/javascript"
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
-          ]
-        },
-        {
-          "name": "POST Agendamentos - Payload Inválido (400)",
+          ],
           "request": {
             "method": "POST",
             "header": [
-              { "key": "X-API-KEY", "value": "{{apiKey}}" },
-              { "key": "Content-Type", "value": "{{contentType}}" }
+              {
+                "key": "X-API-KEY",
+                "value": "{{wrongApiKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "{{contentType}}"
+              }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "integracao", "agendamentos"]
-            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"idExterno\": \"\",\n  \"paciente\": {\n    \"nome\": \"\",\n    \"telefone\": \"12345\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-01-01T00:00:00\",\n    \"medico\": \"\",\n    \"especialidade\": \"\",\n    \"unidadeId\": \"\"\n  }\n}"
+              "raw": "{\n  \"idExterno\": \"SUS-100200\",\n  \"paciente\": {\n    \"nome\": \"Maria Silva\",\n    \"telefone\": \"+5511999998888\",\n    \"cpf\":\"45686775345\",\n    \"email\":\"seu-email@seu-email.com\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-02-16T14:00:00\",\n    \"medico\": \"Dr. House\",\n    \"especialidade\": \"Psiquiatra\",\n    \"unidadeId\": \"UBS-VILA-MARIANA\",\n    \"localAtendimento\": \"UBS Vila Mariana\",\n    \"endereco\": \"Avenida Vila Mariana\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracao",
+                "agendamentos"
+              ]
             }
           },
-          "response": [],
+          "response": []
+        },
+        {
+          "name": "POST Agendamentos - Payload Inválido (400)",
           "event": [
             {
               "listen": "test",
@@ -138,7 +165,37 @@
                 "type": "text/javascript"
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-KEY",
+                "value": "{{apiKey}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "{{contentType}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idExterno\": \"\",\n  \"paciente\": {\n    \"nome\": \"\",\n    \"telefone\": \"12345\"\n  },\n  \"consulta\": {\n    \"dataHora\": \"2026-01-01T00:00:00\",\n    \"medico\": \"\",\n    \"especialidade\": \"\",\n    \"unidadeId\": \"\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/integracao/agendamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "integracao",
+                "agendamentos"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -147,19 +204,6 @@
       "item": [
         {
           "name": "GET Responder (200)",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/acao/responder?token={{token}}&acao={{acao}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "acao", "responder"],
-              "query": [
-                { "key": "token", "value": "{{token}}" },
-                { "key": "acao", "value": "{{acao}}" }
-              ]
-            }
-          },
-          "response": [],
           "event": [
             {
               "listen": "test",
@@ -175,7 +219,34 @@
                 "type": "text/javascript"
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/acao/responder?token={{token}}&acao={{acao}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "acao",
+                "responder"
+              ],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "{{token}}"
+                },
+                {
+                  "key": "acao",
+                  "value": "{{acao}}"
+                }
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -184,15 +255,6 @@
       "item": [
         {
           "name": "GET Actuator Health (200)",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{baseUrl}}/actuator/health",
-              "host": ["{{baseUrl}}"],
-              "path": ["actuator", "health"]
-            }
-          },
-          "response": [],
           "event": [
             {
               "listen": "test",
@@ -209,11 +271,70 @@
                 "type": "text/javascript"
               }
             }
-          ]
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/actuator/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     }
   ],
-  "event": [],
-  "variable": []
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "acao",
+      "value": ""
+    },
+    {
+      "key": "apiKey",
+      "value": ""
+    },
+    {
+      "key": "contentType",
+      "value": ""
+    }
+  ]
 }
