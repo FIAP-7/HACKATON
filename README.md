@@ -5,14 +5,14 @@
 
 ## 📋 Visão Geral do Projeto
 
-Este projeto é um **Middleware de Orquestração** desenvolvido para modernizar a gestão de agendas do Sistema Único de Saúde (SUS). O objetivo principal é reduzir o absenteísmo (pacientes que faltam e não avisam) e otimizar a ocupação dos médicos através de uma abordagem ativa e reativa via WhatsApp.
+Este projeto é um **Middleware de Orquestração** desenvolvido para modernizar a gestão de agendas do Sistema Único de Saúde (SUS). O objetivo principal é reduzir o absenteísmo (pacientes que faltam e não avisam) e otimizar a ocupação dos médicos através de uma abordagem ativa e reativa via E-mail (links de confirmação).
 
 A solução atua como uma camada inteligente acoplada aos sistemas legados, não substituindo o prontuário eletrônico, mas enriquecendo a experiência do paciente e a eficiência operacional.
 
 ### 🚀 Diferenciais Técnicos
 *   **Arquitetura Orientada a Eventos (EDA):** Alta performance e desacoplamento.
-*   **Gestão de Concorrência (Redis Lock):** Sistema de "Repescagem" segura (primeiro a chegar leva a vaga).
-*   **Resiliência:** Comunicação assíncrona para integração com WhatsApp.
+*   **Comunicação por E-mail:** Links únicos (magic links) para confirmação/cancelamento.
+*   **Resiliência:** Comunicação assíncrona via mensageria (RabbitMQ).
 *   **Trava Social (Inclusão):** Lógica que protege pacientes sem acesso digital.
 
 ---
@@ -28,17 +28,16 @@ graph TD
 
     subgraph Mundo_Externo["Mundo Externo"]
         Legado["Sistema Legado SUS"]
-        Zap["WhatsApp (Twilio)"]
+        Email["Servidor SMTP (E-mail)"]
         User["Paciente"]
     end
 
     subgraph Infra_Local["Infraestrutura Local (Docker)"]
         RabbitMQ(("RabbitMQ"))
         Postgres[("PostgreSQL")]
-        Redis[("Redis")]
     end
 
-    subgraph Microsservicos["Microsserviços (Java 21)"]
+    subgraph Microsservicos["Microsserviços (Java)"]
         MS_Ingestao["ms-ingestao"]
         MS_Processamento["ms-processamento"]
         MS_Notificacao["ms-notificacao"]
@@ -46,18 +45,15 @@ graph TD
 
     %% Fluxos
     Legado -->|HTTP POST| MS_Ingestao
-    User -->|WhatsApp| Zap
-    Zap -->|Webhook| MS_Ingestao
 
     MS_Ingestao -->|Pub Evento| RabbitMQ
 
     RabbitMQ -->|Sub Input| MS_Processamento
     MS_Processamento -->|Persistência| Postgres
-    MS_Processamento -->|Lock Distribuído| Redis
     MS_Processamento -->|Pub Notificação| RabbitMQ
 
     RabbitMQ -->|Sub Notificação| MS_Notificacao
-    MS_Notificacao -->|API Call| Zap
+    MS_Notificacao -->|SMTP| Email
 ```
 
 ---
@@ -65,25 +61,25 @@ graph TD
 ## 🧩 Detalhamento dos Microsserviços
 
 ### 1. `ms-ingestao` (Gatekeeper)
-Porta de entrada do sistema. Serviço *stateless* focado em alta disponibilidade de escrita.
-*   **Responsabilidade:** Receber cargas de agendamento do legado e webhooks do WhatsApp.
-*   **Tecnologia:** Spring Web, Spring AMQP.
+Porta de entrada do sistema. Serviço stateless focado em alta disponibilidade de escrita.
+*   **Responsabilidade:** Receber cargas de agendamento do legado e cliques de confirmação/cancelamento via e-mail (magic link).
+*   **Tecnologia:** Spring Web, Spring AMQP, Spring Security (API Key).
 *   **Input:** REST API.
 *   **Output:** Filas RabbitMQ (`sus.input.carga-agendamento`, `sus.input.resposta-usuario`).
 
 ### 2. `ms-processamento` (Core Domain)
 O cérebro da operação. Contém toda a regra de negócio e gestão de estado.
 *   **Responsabilidade:** Máquina de estados do agendamento, Jobs (Schedulers) e Lógica de Repescagem.
-*   **Tecnologia:** Spring Data JPA, Spring Data Redis, Spring Scheduler.
+*   **Tecnologia:** Spring Data JPA, Spring Scheduler.
 *   **Input:** Filas RabbitMQ.
-*   **Output:** Persistência (Postgres), Lock (Redis) e Eventos de Notificação.
+*   **Output:** Persistência (Postgres) e Eventos de Notificação.
 
 ### 3. `ms-notificacao` (Worker)
 Serviço de I/O responsável pela entrega da mensagem.
-*   **Responsabilidade:** Integração com Twilio Sandbox e tratativa de retries.
-*   **Tecnologia:** Spring WebFlux (WebClient), Spring AMQP.
+*   **Responsabilidade:** Envio de e-mails (SMTP) com links de confirmação/cancelamento e antecipação.
+*   **Tecnologia:** Spring AMQP, Spring Mail (JavaMailSender), mecanismo de templates HTML.
 *   **Input:** Fila `sus.core.notificacao`.
-*   **Output:** Chamada HTTP para API Externa.
+*   **Output:** E-mails enviados via servidor SMTP configurado.
 
 ---
 
@@ -116,38 +112,37 @@ Controla o envio de mensagens de "repescagem" para evitar que dois pacientes peg
 *   `id` (UUID)
 *   `agendamentoOrigemId` (UUID - Vaga que abriu)
 *   `pacienteCandidatoId` (UUID - Paciente da fila)
-*   `tokenAceite` (String - Token único para validar o "SIM" no WhatsApp)
+*   `tokenAceite` (String - Token único para validar o aceite via e-mail)
 *   `dataExpiracao` (LocalDateTime - Ex: 1 hora para responder)
 *   `status` (Enum: `ENVIADA`, `ACEITA`, `EXPIRADA`, `PERDIDA`)
 
 ## 🛠️ Stack Tecnológica
 
-*   **Linguagem:** Java 21 (Records, Virtual Threads, Pattern Matching).
-*   **Framework:** Spring Boot 3.2+.
-*   **Mensageria:** RabbitMQ.
-*   **Banco Relacional:** PostgreSQL 16.
-*   **Cache & Lock:** Redis 7.
-*   **Containerização:** Docker & Docker Compose.
-*   **Integração Externa:** Twilio Sandbox for WhatsApp.
-*   **Túnel Local:** Ngrok (para expor o webhook localmente).
+*   **Linguagem:** Java 17/21
+*   **Framework:** Spring Boot 3.x
+*   **Mensageria:** RabbitMQ
+*   **Banco Relacional:** PostgreSQL 16
+*   **Containerização:** Docker & Docker Compose
+*   **Envio de Notificações:** SMTP (ex.: Gmail) via JavaMailSender
+*   **Autenticação M2M:** API Key (X-API-KEY)
 
 ---
 
 ## ⚙️ Regras de Negócio Implementadas
 
 ### 📅 1. Confirmação Ativa (D-7)
-Sete dias antes da consulta, o sistema busca agendamentos pendentes e envia solicitação de confirmação via WhatsApp.
-*   *Opções:* 1-Confirmar, 2-Reagendar, 3-Cancelar.
+Sete dias antes da consulta, o sistema busca agendamentos pendentes e envia e-mail ao paciente com links para confirmar ou cancelar a consulta.
+*   Opções disponíveis via link: Confirmar Presença ou Cancelar Consulta.
 
 ### 🛡️ 2. Trava de Segurança Social (D-2)
 Faltando 48h para a consulta, se o paciente **não respondeu**, o sistema assume **Confirmação Automática**.
 *   *Justificativa:* Proteção a idosos e excluídos digitais. O "silêncio" não pode cancelar o atendimento.
 
-### ⚡ 3. Repescagem Inteligente (Concorrência)
+### ⚡ 3. Repescagem Inteligente
 Quando um paciente cancela (Opção 3), o sistema dispara um algoritmo de realocação:
-1.  Busca os 3 primeiros pacientes na `Fila de Espera`.
-2.  Envia oferta: *"Surgiu uma vaga para amanhã. Digite SIM."*
-3.  **Race Condition:** Se múltiplos pacientes respondem "SIM", o **Redis Atomic Lock (`SETNX`)** garante que apenas o primeiro obtenha a vaga. Os demais recebem uma mensagem de "Vaga já preenchida".
+1.  Busca candidatos elegíveis na lista de espera.
+2.  Envia oferta por e-mail com opção de ACEITAR a nova vaga.
+3.  O primeiro paciente que aceitar dentro do prazo recebe a realocação; os demais são informados sobre a indisponibilidade.
 
 ---
 
@@ -157,8 +152,7 @@ Quando um paciente cancela (Opção 3), o sistema dispara um algoritmo de realoc
 *   Java 21 JDK
 *   Maven 3.8+
 *   Docker & Docker Compose
-*   Conta na Twilio (Sandbox Gratuita)
-*   Ngrok (instalado)
+*   Conta de e-mail SMTP (ex.: Gmail) e credenciais para envio
 
 ### Passo 1: Infraestrutura
 Suba os containers de banco de dados e mensageria:
@@ -166,14 +160,6 @@ Suba os containers de banco de dados e mensageria:
 docker-compose up -d
 ```
 
-### Passo 2: Configuração de Túnel (Ngrok)
-Para receber respostas do WhatsApp no seu ambiente local:
-```bash
-ngrok http 8080
-# Copie a URL gerada (ex: https://abcde.ngrok-free.app)
-# Cole no painel da Twilio em "Sandbox Settings -> When a message comes in"
-# Adicione o sufixo: /api/v1/webhook/twilio
-```
 
 ### Passo 3: Execução dos Serviços
 Como é um monorepo, você pode rodar via IDE ou terminal em abas separadas:
@@ -196,41 +182,47 @@ cd ms-notificacao && mvn spring-boot:run
 ## 📡 Documentação da API (Ingestão)
 
 ### 1. Carga de Agendamento (Simulando Legado SUS)
-**POST** `/api/v1/integracao/agendamentos`
+POST `/api/v1/integracao/agendamentos`
 ```json
 {
   "idExterno": "SUS-100200",
   "paciente": {
     "nome": "João da Silva",
-    "telefone": "5511999998888",
-    "possuiWhatsapp": true
+    "cpf": "123.456.789-00",
+    "telefone": "+5511999998888",
+    "email": "joao.silva@example.com"
   },
   "consulta": {
-    "dataHora": "2025-10-20T14:00:00",
+    "dataHora": "2026-10-20T14:00:00",
     "medico": "Dr. House",
     "especialidade": "CLINICA_GERAL",
+    "endereco": "Rua Exemplo, 123 - Bairro, Cidade/SP",
+    "localAtendimento": "UBS Vila Mariana - Sala 2",
     "unidadeId": "UBS-VILA-MARIANA"
   }
 }
 ```
 
-### 2. Webhook Twilio (Callback)
-**POST** `/api/v1/webhook/twilio`
-*Content-Type: application/x-www-form-urlencoded*
-*   Recebe os parâmetros padrão da Twilio (`From`, `Body`) e encaminha para a fila de processamento.
+### 2. Ações via E-mail (Magic Link)
+GET `/api/v1/acao/confirmar?token={uuid}&acao=CONFIRMAR|CANCELAR`
+- Endpoint público acessado por link enviado por e-mail para confirmar ou cancelar a consulta.
+
+GET `/api/v1/acao/antecipar?token={uuid}&acao=ACEITAR|MANTER`
+- Endpoint público para aceitar uma vaga antecipada ou manter a data original.
+- Retorna HTML de confirmação para exibição no navegador.
 
 ---
 
 ## 🧪 Roteiro de Teste (MVP Video)
 
-1.  **Cenário Feliz:** Inserir agendamento para D+7. Verificar recebimento do WhatsApp. Responder "1". Verificar status `CONFIRMADO_PACIENTE` no banco.
-2.  **Cenário Trava Social:** Inserir agendamento para D+2. Aguardar execução do Job. Verificar status `CONFIRMADO_AUTOMATICO`.
-3.  **Cenário Repescagem:**
-    *   Popular `FilaEspera` no banco.
-    *   Enviar "3" (Cancelar) em um agendamento existente.
-    *   Verificar envio de ofertas para a fila.
-    *   Simular resposta "SIM" de dois números diferentes rapidamente.
-    *   Validar logs de bloqueio do Redis (um sucesso, um falha).
+1.  Cenário Feliz: Inserir agendamento para D+7. Verificar recebimento do e-mail. Clicar em Confirmar. Verificar status `CONFIRMADO_PACIENTE` no banco.
+2.  Trava Social: Inserir agendamento para D+2. Aguardar execução do Job. Verificar status `CONFIRMADO_AUTOMATICO`.
+3.  Repescagem (Antecipação):
+    *   Popular candidatos de espera no banco (dados seed ou carga manual).
+    *   Cancelar um agendamento existente para abrir vaga.
+    *   Verificar envio de e-mails de oferta de antecipação.
+    *   Clicar em ACEITAR no primeiro e-mail recebido e, depois, tentar aceitar em outro e-mail.
+    *   Esperado: Primeiro aceite é efetivado, os demais recebem indisponibilidade.
 
 ---
 

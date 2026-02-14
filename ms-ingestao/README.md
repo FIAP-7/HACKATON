@@ -92,13 +92,14 @@ Recebe dados brutos do sistema legado.
 **Exemplo cURL:**
 ```bash
 curl -X POST "http://localhost:8080/api/v1/integracao/agendamentos" \
-  -H "X-API-KEY: hackathon-secret-key-123" \
+  -H "X-API-KEY: hackathon-secret" \
   -H "Content-Type: application/json" \
   -d '{
     "idExterno": "REQ-001",
     "paciente": {
         "nome": "Maria Silva",
-        "telefone": "5511999998888",
+        "cpf": "123.456.789-00",
+        "telefone": "+5511999998888",
         "email": "maria@email.com"
     },
     "consulta": {
@@ -117,14 +118,16 @@ curl -X POST "http://localhost:8080/api/v1/integracao/agendamentos" \
 ### 2. Ação do Usuário (Magic Link)
 Endpoint acessado pelo navegador quando o paciente clica no e-mail.
 
-*   **URL:** `GET /api/v1/acao/responder`
+Endpoints públicos acessados por links enviados por e-mail:
+*   `GET /api/v1/acao/confirmar?token={uuid}&acao=CONFIRMAR|CANCELAR`
+*   `GET /api/v1/acao/antecipar?token={uuid}&acao=ACEITAR|MANTER`
 *   **Auth:** Pública.
 *   **Query Params:**
     *   `token`: Identificador único da transação.
-    *   `acao`: `CONFIRMAR` ou `CANCELAR`.
+    *   `acao`: Para confirmação: `CONFIRMAR` ou `CANCELAR`. Para antecipação: `ACEITAR` ou `MANTER`. 
 
 **Exemplo (Navegador):**
-`http://localhost:8080/api/v1/acao/responder?token=uuid-1234-5678&acao=CONFIRMAR`
+`http://localhost:8080/api/v1/acao/confirmar?token=uuid-1234-5678&acao=CONFIRMAR`
 
 *   **Resposta:**
     *   `200 OK` (Content-Type: `text/html`): Retorna uma página HTML renderizada informando o sucesso da operação.
@@ -202,7 +205,8 @@ A coleção cobre os cenários:
 - POST /api/v1/integracao/agendamentos — Sem API Key (401)
 - POST /api/v1/integracao/agendamentos — API Key Errada (401)
 - POST /api/v1/integracao/agendamentos — Payload Inválido (400)
-- GET /api/v1/acao/responder — Público (200, Content-Type text/html)
+- GET /api/v1/acao/confirmar — Público (200, Content-Type text/html)
+- GET /api/v1/acao/antecipar — Público (200, Content-Type text/html)
 - GET /actuator/health — Healthcheck (200)
 
 Variáveis do ambiente:
