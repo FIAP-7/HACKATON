@@ -156,13 +156,21 @@ POST `/api/v1/integracao/agendamentos`
   "consulta": {
     "dataHora": "2026-10-20T14:00:00",
     "medico": "Dr. House",
-    "especialidade": "CLINICA_GERAL",
+    "especialidade": "Psiquiatra",
     "endereco": "Rua Exemplo, 123 - Bairro, Cidade/SP",
     "localAtendimento": "UBS Vila Mariana - Sala 2",
     "unidadeId": "UBS-VILA-MARIANA"
   }
 }
 ```
+#### 1.1 OBS: Para este exemplo local, a classe DataSeederConfig.java preenche o banco de dados com informações que seriam provinientes da API do SUS em ambiente produtivo. 
+Desta forma, utilize sempre os campos abaixo na request do objeto consulta para garantir o funcionamento:
+  "especialidade": "Psiquiatra", 
+  "unidadeId": "UNI-001",
+  "email": "seuemailpessoal@domain.com"
+
+Além disso, o campo "dataHora" tem que ser entre hoje e D+7 para garantir o disparo do e-mail.
+
 
 ### 2. Ações via E-mail (Magic Link)
 GET `/api/v1/acao/confirmar?token={uuid}&acao=CONFIRMAR|CANCELAR`
@@ -174,18 +182,7 @@ GET `/api/v1/acao/antecipar?token={uuid}&acao=ACEITAR|MANTER`
 
 ---
 
-## 🧪 Roteiro de Teste (MVP Video)
-
-1.  Cenário Feliz: Inserir agendamento para D+7. Verificar recebimento do e-mail. Clicar em Confirmar. Verificar status `CONFIRMADO_PACIENTE` no banco.
-2.  Trava Social: Inserir agendamento para D+2. Aguardar execução do Job. Verificar status `CONFIRMADO_AUTOMATICO`.
-3.  Repescagem (Antecipação):
-    *   Popular candidatos de espera no banco (dados seed ou carga manual).
-    *   Cancelar um agendamento existente para abrir vaga.
-    *   Verificar envio de e-mails de oferta de antecipação.
-    *   Clicar em ACEITAR no primeiro e-mail recebido e, depois, tentar aceitar em outro e-mail.
-    *   Esperado: Primeiro aceite é efetivado, os demais recebem indisponibilidade.
-
----
+#### Importante: Se você receber muitos e-mails, é por conta do Scheduler, que está configurado para rodar a 4 minutos somente para fins de teste local.
 
 ## Créditos
 
