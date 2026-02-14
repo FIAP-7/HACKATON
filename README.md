@@ -182,7 +182,7 @@ GET `/api/v1/acao/antecipar?token={uuid}&acao=ACEITAR|MANTER`
 
 ---
 
-#### Importante: Se você receber muitos e-mails, é por conta do Scheduler, que está configurado para rodar a 4 minutos somente para fins de teste local.
+#### Importante: Se você receber muitos e-mails, é por conta do Scheduler, que está configurado para rodar a cada 4 minutos somente para fins de teste local.
 
 ## Créditos
 
