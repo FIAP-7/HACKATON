@@ -23,38 +23,7 @@ O sistema foi desenhado utilizando o padrão de **Microsserviços** em um **Mono
 
 ### Diagrama de Componentes
 
-```mermaid
-graph TD
-
-    subgraph Mundo_Externo["Mundo Externo"]
-        Legado["Sistema Legado SUS"]
-        Email["Servidor SMTP (E-mail)"]
-        User["Paciente"]
-    end
-
-    subgraph Infra_Local["Infraestrutura Local (Docker)"]
-        RabbitMQ(("RabbitMQ"))
-        Postgres[("PostgreSQL")]
-    end
-
-    subgraph Microsservicos["Microsserviços (Java)"]
-        MS_Ingestao["ms-ingestao"]
-        MS_Processamento["ms-processamento"]
-        MS_Notificacao["ms-notificacao"]
-    end
-
-    %% Fluxos
-    Legado -->|HTTP POST| MS_Ingestao
-
-    MS_Ingestao -->|Pub Evento| RabbitMQ
-
-    RabbitMQ -->|Sub Input| MS_Processamento
-    MS_Processamento -->|Persistência| Postgres
-    MS_Processamento -->|Pub Notificação| RabbitMQ
-
-    RabbitMQ -->|Sub Notificação| MS_Notificacao
-    MS_Notificacao -->|SMTP| Email
-```
+![Diagrama de Arquitetura](arquitetura-hackaton.PNG)
 
 ---
 
@@ -85,36 +54,26 @@ Serviço de I/O responsável pela entrega da mensagem.
 
 ### Entidades Principais (Persistência)
 
-**1. `Agendamento`** (A raiz do agregado)
-Representa a consulta importada do legado.
-*   `id` (UUID - gerado pelo nosso sistema)
-*   `idExterno` (String - ID original no sistema do SUS, para correlação)
-*   `pacienteNome` (String)
-*   `pacienteTelefone` (String - Formato E.164)
-*   `dataHoraConsulta` (LocalDateTime)
-*   `medicoNome` (String)
-*   `especialidade` (String)
-*   `unidadeSaude` (String)
-*   `status` (Enum: `PENDENTE`, `AGUARDANDO_CONFIRMACAO`, `CONFIRMADO_PACIENTE`, `CONFIRMADO_AUTOMATICO`, `CANCELADO`, `REALOCADO`)
-*   `dataLimiteConfirmacao` (LocalDateTime - Calculado: DataConsulta - 2 dias)
-
-**2. `FilaEspera`**
-Lista de pacientes interessados em vagas naquela especialidade/unidade (para a repescagem).
+**1. `Agendamento`** (raiz do agregado)
+Representa uma consulta importada do sistema legado.
 *   `id` (UUID)
-*   `pacienteNome` (String)
-*   `pacienteTelefone` (String)
+*   `idExterno` (String)
+*   `paciente` (Objeto `Paciente`)
+*   `dataHora` (LocalDateTime)
+*   `medico` (String)
 *   `especialidade` (String)
-*   `unidadeSaude` (String)
-*   `dataSolicitacao` (LocalDateTime)
+*   `endereco` (String)
+*   `localAtendimento` (String)
+*   `unidadeId` (String)
+*   `status` (Enum: `PENDENTE`, `AGUARDANDO_CONFIRMACAO`, `CONFIRMADO_PACIENTE`, `CONFIRMADO_AUTOMATICO`, `CANCELADO`, `ANTECIPAR`, `REALOCADO`, `AGUARDANDO_ANTECIPACAO`)
+*   `dataLimiteConsulta` (LocalDateTime)
 
-**3. `OfertaVaga`**
-Controla o envio de mensagens de "repescagem" para evitar que dois pacientes peguem a mesma vaga.
-*   `id` (UUID)
-*   `agendamentoOrigemId` (UUID - Vaga que abriu)
-*   `pacienteCandidatoId` (UUID - Paciente da fila)
-*   `tokenAceite` (String - Token único para validar o aceite via e-mail)
-*   `dataExpiracao` (LocalDateTime - Ex: 1 hora para responder)
-*   `status` (Enum: `ENVIADA`, `ACEITA`, `EXPIRADA`, `PERDIDA`)
+**2. `Paciente`**
+Informações básicas do paciente vinculadas ao agendamento.
+*   `cpf` (String)
+*   `nome` (String)
+*   `telefone` (String - Formato E.164)
+*   `email` (String)
 
 ## 🛠️ Stack Tecnológica
 
@@ -140,7 +99,7 @@ Faltando 48h para a consulta, se o paciente **não respondeu**, o sistema assume
 
 ### ⚡ 3. Repescagem Inteligente
 Quando um paciente cancela (Opção 3), o sistema dispara um algoritmo de realocação:
-1.  Busca candidatos elegíveis na lista de espera.
+1.  Busca candidatos elegíveis com agendamentos futuros.
 2.  Envia oferta por e-mail com opção de ACEITAR a nova vaga.
 3.  O primeiro paciente que aceitar dentro do prazo recebe a realocação; os demais são informados sobre a indisponibilidade.
 
@@ -154,12 +113,14 @@ Quando um paciente cancela (Opção 3), o sistema dispara um algoritmo de realoc
 *   Docker & Docker Compose
 *   Conta de e-mail SMTP (ex.: Gmail) e credenciais para envio
 
-### Passo 1: Infraestrutura
+### Passo 1: Configuração de e-mail para testes
+Antes de subir o ambiente com o Docker, abrir arquivo docker-compose.yml e alterar o valor da variável de ambiente SEEDER_EMAIL para o seu próprio e-mail
+
+### Passo 2: Infraestrutura
 Suba os containers de banco de dados e mensageria:
 ```bash
 docker-compose up -d
 ```
-
 
 ### Passo 3: Execução dos Serviços
 Como é um monorepo, você pode rodar via IDE ou terminal em abas separadas:
